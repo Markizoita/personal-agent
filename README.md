@@ -28,6 +28,13 @@ mutates it, and PUTs it back. SQL changes go straight to Supabase via
   HTTPS via the Supabase Management API (needs `SUPABASE_ACCESS_TOKEN`). Use
   this from Claude Code cloud sessions, which can't open a direct Postgres
   connection.
+- `game/` - The Climb (Start Up game, metrics only, no mountain yet).
+  `GAME-INSTRUCTIONS.md` is the spec; `the-climb.html` is the screen for the
+  Windows app (open with `?demo=1` for sample data, or `?url=...&token=...`).
+  Backend: `game_sql.sql` (tables + functions, `game_test.sql` runs the test
+  list and rolls back), `build_game.js` (bot tools/prompt/recaps),
+  `build_game_api.js` (the `GET /webhook/game-state` endpoint, needs
+  `GAME_API_TOKEN`).
 - `build_*.js` / `fix_*.js` - one-off scripts that built or patched a specific
   n8n workflow feature. Each fetches the current workflow, mutates it in
   plain JS, writes `update_workflow_*.json`, and the caller PUTs it back via
