@@ -1,3 +1,4 @@
+require('./env');
 const { Client } = require('pg');
 const fs = require('fs');
 

@@ -1,3 +1,4 @@
+require('./env');
 const { Client } = require('pg');
 const sql = process.argv[2];
 const client = new Client({ connectionString: process.env.PG_CONN, ssl: { rejectUnauthorized: false } });
