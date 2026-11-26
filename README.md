@@ -24,6 +24,10 @@ mutates it, and PUTs it back. SQL changes go straight to Supabase via
   before adding anything new.
 - `run_sql.js <file>.sql` - runs a SQL file against Supabase directly.
 - `query_sql.js "<SELECT ...>"` - runs a query and prints the rows.
+- `supabase_sql.js <file>.sql` / `supabase_sql.js -q "<sql>"` - same, but over
+  HTTPS via the Supabase Management API (needs `SUPABASE_ACCESS_TOKEN`). Use
+  this from Claude Code cloud sessions, which can't open a direct Postgres
+  connection.
 - `build_*.js` / `fix_*.js` - one-off scripts that built or patched a specific
   n8n workflow feature. Each fetches the current workflow, mutates it in
   plain JS, writes `update_workflow_*.json`, and the caller PUTs it back via
