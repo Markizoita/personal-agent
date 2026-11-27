@@ -15,19 +15,18 @@ Don't build an open item until Mark says to start it.
   breakdown card. See "How submit works" below.
 - [x] To-dos belong to projects (Projects tab holds each list, optional
   date, "+ Today", finishing one can attach proof).
+- [x] Blank Home flashed before the data on open: a loading screen now
+  shows until data arrives (with "Try again" when offline), and the open
+  app refreshes quietly when you come back to it. Verified live.
+- [x] Same-day add-on: after submitting, Start again adds to the same day's
+  form; the next submit adds an "add-on" under the original, each part with
+  its own work times (e.g. 9-5, then 7-10). See "How submit works" below.
 - [ ] Fix past memory to the new Start Up Ops system (Mark to explain; he
   asked to wait on starting it).
   - Overnight timer, Nov 26-27: `startup_sessions` id 19 counted 12:36 AM
     to 10:32 AM (~9.9h). His chat messages stopped ~2:52 AM, so the real
     stop was likely ~3 AM. Hours and the matching `hour_worked` XP row need
     correcting; part of this item, don't change it before he explains.
-- [x] Blank Home flashed before the data on open: a loading screen now
-  shows until data arrives (with "Try again" when offline), and the open
-  app refreshes quietly when you come back to it. Verified live.
-- [ ] Same-day add-on: after submitting, Start again adds to today's form;
-  the next submit adds an "add-on" under the original, each part with its
-  own work times (e.g. 9-5, then 7-10). Design not yet confirmed; today a
-  resubmit rewrites the one breakdown.
 - [ ] Phone: re-add the Home Screen shortcut from the GitHub Pages URL.
 - [ ] Decide: keep or delete the old n8n "Dashboard Page" workflow.
 - [ ] Auto-log Shipped/Pitched from proof (planned, never built).
@@ -58,6 +57,12 @@ Don't build an open item until Mark says to start it.
   `~/.claude/settings.json` (remove that block to turn it off): sends only
   end-of-turn summaries, changed file names and active minutes (never user
   messages), redacted, to `claude-session` with `CLAUDE_HOOK_SECRET`.
+- Add-ons (`addon_sql.sql`, apply after `homepage_sql.sql`): one row per
+  submit in `startup_submissions` (part 1 = original, 2+ = add-ons). A
+  submit after new work (timer stretch of 1+ minute, proof, to-do done,
+  logged task) adds a part and Claude gets only what happened since the
+  last one; with nothing new it rewrites the latest part. Tested with the
+  SQL suite and two real submits on a throwaway date.
 - `startup_submit_day`/hook tables are server-only (anon revoked).
 - Mark's first real submit worked (Nov 27). It listed an already-solved
   problem as open, picked from an early session note; fixed the same day:
