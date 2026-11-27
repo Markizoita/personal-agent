@@ -42,6 +42,7 @@ create table if not exists game_task_log (
   undone_at timestamptz,
   created_at timestamptz not null default now()
 );
+alter table game_task_log add column if not exists project text;   -- which project it was for (null = not tied to one)
 create index if not exists game_task_log_date_idx on game_task_log (log_date) where undone_at is null;
 
 grant all on table public.game_tasks, public.game_task_log to service_role;
@@ -199,12 +200,14 @@ $$;
 
 -- Log one task. p_task = key or (part of) the name; p_quantity = hours / dollars / count (default 1).
 -- Returns what was logged plus any level-up / power level-up / new title, so the reply can say so once.
-create or replace function log_game_task(p_task text, p_quantity text default null, p_note text default null, p_source text default 'telegram')
+drop function if exists log_game_task(text, text, text, text);
+create or replace function log_game_task(p_task text, p_quantity text default null, p_note text default null, p_source text default 'telegram', p_project text default null)
 returns jsonb language plpgsql as $$
 declare v_q text := nullif(nullif(trim(coalesce(p_task, '')), ''), 'null');
 declare v_qty numeric := coalesce(nullif(nullif(trim(coalesce(p_quantity, '')), ''), 'null')::numeric, 1);
 declare v_note text := nullif(nullif(trim(coalesce(p_note, '')), ''), 'null');
 declare v_src text := coalesce(nullif(nullif(trim(coalesce(p_source, '')), ''), 'null'), 'telegram');
+declare v_project text := nullif(nullif(trim(coalesce(p_project, '')), ''), 'null');
 declare v_task game_tasks;
 declare v_today date := startup_today();
 declare v_before_total numeric;
@@ -243,8 +246,8 @@ begin
   v_before_titles := game_titles();
 
   v_xp := round(v_task.xp * v_qty, 2);
-  insert into game_task_log (log_date, task_key, task_name, power, quantity, xp, source, note)
-  values (v_today, v_task.key, v_task.name, v_task.power, v_qty, v_xp, v_src, v_note)
+  insert into game_task_log (log_date, task_key, task_name, power, quantity, xp, source, note, project)
+  values (v_today, v_task.key, v_task.name, v_task.power, v_qty, v_xp, v_src, v_note, v_project)
   returning id into v_id;
 
   v_total := v_before_total + v_xp;
@@ -373,7 +376,7 @@ begin
   update startup_sessions set stop_at = now() where id = v_session.id;
   v_minutes := round(extract(epoch from (now() - v_session.start_at)) / 60.0);
   if v_minutes >= 1 then
-    v_game := log_game_task('hour_worked', round(v_minutes / 60.0, 4)::text, v_session.project, 'timer');
+    v_game := log_game_task('hour_worked', round(v_minutes / 60.0, 4)::text, null, 'timer', v_session.project);
   end if;
   return jsonb_build_object('ok', true, 'project', v_session.project, 'minutes', v_minutes, 'game', v_game);
 end;
@@ -387,7 +390,7 @@ begin
   insert into startup_proof (log_date, project, text)
   values (startup_today(), nullif(nullif(trim(coalesce(p_project, '')), ''), 'null'), trim(p_text));
   if not exists(select 1 from game_task_log where undone_at is null and task_key = 'win_day' and log_date = startup_today()) then
-    v_game := log_game_task('win_day', '1', left(trim(p_text), 200), 'proof');
+    v_game := log_game_task('win_day', '1', left(trim(p_text), 200), 'proof', p_project);
   end if;
   return jsonb_build_object('ok', true, 'game', v_game);
 end;

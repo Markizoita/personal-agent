@@ -35,6 +35,14 @@ mutates it, and PUTs it back. SQL changes go straight to Supabase via
   list and rolls back), `build_game.js` (bot tools/prompt/recaps),
   `build_game_api.js` (the `GET /webhook/game-state` endpoint, needs
   `GAME_API_TOKEN`).
+- `dashboard_sql.sql` - data layer for the Start Up Ops dashboard (no login or
+  web app yet). Viewing, one call per tab: `get_dashboard_home()`,
+  `get_dashboard_progress('week'|'month'|'all')`, `get_dashboard_projects()`,
+  `get_dashboard_history('30')`, `get_dashboard_day('YYYY-MM-DD')`. Doing:
+  `start_startup_session`, `stop_startup_session`, `add_startup_todo`,
+  `set_startup_todo_done`, `delete_startup_todo`, `log_startup_proof`,
+  `set_startup_project`, `set_startup_off_day`. `dashboard_test.sql` exercises
+  all of them and rolls back.
 - `build_*.js` / `fix_*.js` - one-off scripts that built or patched a specific
   n8n workflow feature. Each fetches the current workflow, mutates it in
   plain JS, writes `update_workflow_*.json`, and the caller PUTs it back via
