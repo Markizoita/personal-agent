@@ -3,12 +3,12 @@
   "name": "My workflow",
   "description": null,
   "active": true,
-  "activeVersionId": "8c40e0ec-e77e-4f3f-a8e0-7dca2f5dd9f5",
+  "activeVersionId": "e69ca1e5-a66a-4db5-8f2d-b2f7411f4ed8",
   "createdAt": "2026-11-17T16:00:32.429Z",
-  "updatedAt": "2026-11-27T02:51:47.670Z",
+  "updatedAt": "2026-11-27T07:32:04.900Z",
   "isArchived": false,
-  "versionId": "8c40e0ec-e77e-4f3f-a8e0-7dca2f5dd9f5",
-  "versionCounter": 162,
+  "versionId": "e69ca1e5-a66a-4db5-8f2d-b2f7411f4ed8",
+  "versionCounter": 163,
   "sourceWorkflowId": null,
   "triggerCount": 11,
   "nodes": [
@@ -30,7 +30,7 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "8H0hBfrPobhcvfBu",
+          "id": "WFylXoyfaqu7Lhly",
           "name": "Telegram account"
         }
       }
@@ -217,7 +217,7 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "8H0hBfrPobhcvfBu",
+          "id": "WFylXoyfaqu7Lhly",
           "name": "Telegram account"
         }
       }
@@ -416,7 +416,7 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "8H0hBfrPobhcvfBu",
+          "id": "WFylXoyfaqu7Lhly",
           "name": "Telegram account"
         }
       }
@@ -513,7 +513,7 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "8H0hBfrPobhcvfBu",
+          "id": "WFylXoyfaqu7Lhly",
           "name": "Telegram account"
         }
       }
@@ -689,7 +689,7 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "8H0hBfrPobhcvfBu",
+          "id": "WFylXoyfaqu7Lhly",
           "name": "Telegram account"
         }
       }
@@ -2953,7 +2953,7 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "8H0hBfrPobhcvfBu",
+          "id": "WFylXoyfaqu7Lhly",
           "name": "Telegram account"
         }
       }
@@ -3029,7 +3029,7 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "8H0hBfrPobhcvfBu",
+          "id": "WFylXoyfaqu7Lhly",
           "name": "Telegram account"
         }
       }
@@ -4193,7 +4193,7 @@
     }
   ],
   "activeVersion": {
-    "versionId": "8c40e0ec-e77e-4f3f-a8e0-7dca2f5dd9f5",
+    "versionId": "e69ca1e5-a66a-4db5-8f2d-b2f7411f4ed8",
     "workflowId": "lULFqqQFMNb8byt2",
     "nodes": [
       {
@@ -4214,7 +4214,7 @@
         },
         "credentials": {
           "telegramApi": {
-            "id": "8H0hBfrPobhcvfBu",
+            "id": "WFylXoyfaqu7Lhly",
             "name": "Telegram account"
           }
         }
@@ -4401,7 +4401,7 @@
         },
         "credentials": {
           "telegramApi": {
-            "id": "8H0hBfrPobhcvfBu",
+            "id": "WFylXoyfaqu7Lhly",
             "name": "Telegram account"
           }
         }
@@ -4600,7 +4600,7 @@
         },
         "credentials": {
           "telegramApi": {
-            "id": "8H0hBfrPobhcvfBu",
+            "id": "WFylXoyfaqu7Lhly",
             "name": "Telegram account"
           }
         }
@@ -4697,7 +4697,7 @@
         },
         "credentials": {
           "telegramApi": {
-            "id": "8H0hBfrPobhcvfBu",
+            "id": "WFylXoyfaqu7Lhly",
             "name": "Telegram account"
           }
         }
@@ -4873,7 +4873,7 @@
         },
         "credentials": {
           "telegramApi": {
-            "id": "8H0hBfrPobhcvfBu",
+            "id": "WFylXoyfaqu7Lhly",
             "name": "Telegram account"
           }
         }
@@ -7137,7 +7137,7 @@
         },
         "credentials": {
           "telegramApi": {
-            "id": "8H0hBfrPobhcvfBu",
+            "id": "WFylXoyfaqu7Lhly",
             "name": "Telegram account"
           }
         }
@@ -7213,7 +7213,7 @@
         },
         "credentials": {
           "telegramApi": {
-            "id": "8H0hBfrPobhcvfBu",
+            "id": "WFylXoyfaqu7Lhly",
             "name": "Telegram account"
           }
         }
@@ -8264,16 +8264,16 @@
     "name": null,
     "description": null,
     "autosaved": false,
-    "createdAt": "2026-11-27T02:51:47.743Z",
-    "updatedAt": "2026-11-27T02:51:47.743Z",
+    "createdAt": "2026-11-27T07:32:04.907Z",
+    "updatedAt": "2026-11-27T07:32:04.907Z",
     "workflowPublishHistory": [
       {
-        "id": 163,
+        "id": 200,
         "workflowId": "lULFqqQFMNb8byt2",
-        "versionId": "8c40e0ec-e77e-4f3f-a8e0-7dca2f5dd9f5",
+        "versionId": "e69ca1e5-a66a-4db5-8f2d-b2f7411f4ed8",
         "event": "activated",
         "userId": "d8246597-67e7-453b-9caa-f5769d0905ed",
-        "createdAt": "2026-11-27T02:51:48.487Z"
+        "createdAt": "2026-11-27T07:32:06.104Z"
       }
     ]
   },
