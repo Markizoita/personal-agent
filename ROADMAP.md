@@ -336,11 +336,13 @@ per Mark ("do this for all data and days").**
 - Limit: only this machine's Claude session log was available. Time in
   the cloud session or claude.ai chats isn't counted.
 
-**Windows app — ready, needs Mark's click.** Added real PNG icons
-(192/512, rendered from `icon.svg` with headless Edge) to
-`docs/manifest.json`. Install: open https://markizoita.github.io/personal-agent/
-in Edge → "App available" icon in the address bar (or ⋯ → Apps →
-Install this site as an app).
+**Windows app — done (2026-11-27).** Added real PNG icons (192/512,
+rendered from `icon.svg` with headless Edge) to `docs/manifest.json`.
+Mark installed it from Edge ("App available" icon → Install) and pinned
+it to the taskbar. Confirmed: a "Start Up Ops" shortcut launches it as an
+Edge app (`msedge_proxy.exe --app-url=https://markizoita.github.io/personal-agent/`).
+To reinstall on another PC: open that URL in Edge → ⋯ → Apps → Install
+this site as an app → tick "Pin to taskbar."
 
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,
