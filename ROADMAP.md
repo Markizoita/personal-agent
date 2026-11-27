@@ -7,11 +7,19 @@ Learned, TikTok (including the periodic usage nudge). Start Up Ops v1 is
 the current build (see its own section below) — a from-scratch redesign,
 replacing the old paused Start Up fields in `daily_log`.
 
-**Reminder for later (per Mark, 2026-11-26): once Start Up Ops v1 works,
-revisit (a) the Windows dashboard app, and (b) the GitHub repo + nightly
-workflow/DB backups.** Both were deliberately deferred out of v1 — flag
-these back to Mark once the core loop (start/stop, todos, wrap-up, recap)
-is built and tested.
+**Git repo — done (2026-11-26).** Private repo at
+github.com/Markizoita/personal-agent, all build scripts/SQL/docs, secrets
+scrubbed into a gitignored `.env`. `run_sql.js`/`query_sql.js` now actually
+auto-load it (README claimed this before it was true - fixed).
+
+**Windows dashboard — in progress, being built in a separate cloud Claude
+Code session (not this one), per the original plan.** Progress tab (level/
+XP/rank/streak) is done. Plan for the rest: (1) read-only tabs first -
+Progress, Projects, History; (2) action tabs after - Home's Start/Stop, add
+to-do, log proof - gated behind a real login, since the old web app got
+taken down for having no auth and being publicly writable. Reads from the
+same Supabase tables (`startup_*`) built here for the Telegram side - no
+conflict, just two front-ends on one dataset.
 
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,
