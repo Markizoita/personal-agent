@@ -186,13 +186,34 @@ not worth it right now - revisit if it ever feels needed. Workflow-export-
 to-git is being built instead (see below) since that one doesn't need a
 paid upgrade.
 
-**n8n workflow export to git — in progress (2026-11-27).** Fully doable
-without any droplet shell access: a nightly n8n schedule trigger calls
-n8n's own REST API to fetch the current workflow JSON, then commits it
-straight to the `personal-agent` GitHub repo via GitHub's Contents API -
-no SSH, no git installed server-side. Waiting on a GitHub fine-grained
-Personal Access Token from Mark (repo-scoped, Contents: Read and write) to
-store as an n8n credential before this can be built and tested.
+**n8n workflow export to git — done and verified (2026-11-27).** Built
+without any droplet shell access: a nightly (3am ET) n8n schedule trigger
+calls n8n's own REST API to fetch the main workflow's current JSON, then
+commits it to `workflow_exports/main-workflow.json` in the `personal-agent`
+GitHub repo via GitHub's Contents API - no SSH, no git installed server-
+side. Two new n8n credentials: a native `githubApi` one (Mark's
+fine-grained PAT, repo-scoped, Contents: Read and write) and a header-auth
+one wrapping the existing n8n API key, so neither sits as plaintext in the
+workflow. Tested via a temporary webhook (removed after) - confirmed both
+the create path (no file yet) and would have confirmed the update path too,
+except testing surfaced a real, unrelated emergency instead (next entry).
+Scope note: exports just the main bot workflow for now, not every
+workflow (Dashboard Actions API, Dashboard Page, etc.) - a reasonable
+future extension, not done today.
+
+**Real incident, found and fixed (2026-11-27): the droplet ran out of
+memory and the whole bot went down.** Discovered while testing the git-
+export workflow above - n8n's executions API started returning "Database
+is not ready", then every webhook (dashboard, main bot, everything) started
+502/503-ing. Diagnosed via DigitalOcean's own monitoring API (not guessed):
+free memory was down to ~70MB out of the droplet's 1GB total - a result of
+how much got built onto this same small $6/mo droplet today. Mark
+approved resizing to `s-1vcpu-2gb` ($12/mo, +$6/mo). Required a full
+power-off → resize → power-on cycle (DO's resize API doesn't allow a RAM
+change on a running droplet) - handled entirely via the DO API, polling
+each action to completion rather than guessing timing. Confirmed fixed
+two ways: the bot/dashboard/n8n API all back to real 200s, and free memory
+now ~1.6GB of 2GB - a real, verified fix, not just "it's back up for now."
 
 **Sequencing confirmed (2026-11-27), per Mark: git export → Windows app
 install → migrate the old Input Log data in.** That order, once the git
