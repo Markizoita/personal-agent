@@ -29,6 +29,22 @@ mountain-climb visual again - Mark wants that visual redone/polished, and
 wants that redo done in THIS session (Claude Code desktop) using its
 design/artifact tooling, not the dashboard session. Paused, not dropped.
 
+**The Climb (the real game system) — live (2026-11-26), replaces the simple
+hour-goal scoring entirely, per Mark's explicit call.** Task-based XP across
+four powers (Work/Shipping/Selling/Earning), levels that never drop, titles
+earned once and kept, streak/weather from daily results. Built across both
+sessions: the dashboard/cloud session wrote the SQL (`game_sql.sql`,
+`dashboard_sql.sql`) and wired the Telegram side directly against the live
+n8n workflow (it has its own n8n API key) - `log_game_task`/`undo_game_task`
+tools, "did <task>", auto-detected shipped/pitched, "/game", the whole-form
+"Climb" display, Sunday weekly recap. This session's part was running the
+actual SQL against Supabase, since that cloud container can only make HTTPS
+calls, not a raw Postgres connection - tested live (logged + undid a task).
+Old hour-goal rules (fixed daily minute target, level up/down by weekly win
+count) are gone, replaced by these functions: `finalize_startup_day` (Win =
+proof logged, no hour goal), `get_startup_today`, `stop_startup_session`,
+`log_startup_proof` - all now game-aware.
+
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,
    on-time/late/miss cutoff at 7:30, streak tracking, `/wake`, `/skip`,
