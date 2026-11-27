@@ -177,12 +177,22 @@ table never built), so it's left out rather than faked. Checked the new
 JS for syntax errors with `node --check` before deploying this time, then
 re-verified live in a real browser across all 5 tabs - clean.
 
-**Database backups — explicitly deferred (2026-11-27), not forgotten.**
-Checked current pricing: Supabase Pro is $25/mo (per organization, covers
-every project under it), includes daily automatic backups. Mark's call:
-not worth it right now - revisit if it ever feels needed. Workflow-export-
-to-git is being built instead (see below) since that one doesn't need a
-paid upgrade.
+**Database backups — done (2026-11-27), supersedes the earlier deferral.**
+Mark upgraded the `marizo` Supabase org to Pro ($25/mo, spend cap on).
+Verified in the dashboard: plan shows "Pro Plan", and Database → Backups
+lists daily physical backups, latest 27 Nov 09:12 UTC. With this, the
+backup picture is complete: database (Supabase daily), whole server
+(DigitalOcean weekly), main bot workflow (nightly to git). The other
+workflows are rebuildable from their `build_*.js` scripts (Error Watcher's
+is on the `claude/n8n-api-auth-setup-tv37cr` branch), so no extra export
+is planned.
+
+**Game scope, per Mark (2026-11-27): game VISUALS are dropped** (the
+mountain-climb scene, in this and any later build). **Levels, XP, titles,
+powers and metrics stay.** Supersedes every note above about redoing the
+mountain visual. Also deleted the `Game State API` workflow (game-only
+endpoint, no app ever called it, held the Supabase key inline; rebuildable
+from `build_game_api.js` on the cloud branch).
 
 **n8n workflow export to git — done and verified (2026-11-27).** Built
 without any droplet shell access: a nightly (3am ET) n8n schedule trigger
