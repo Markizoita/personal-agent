@@ -37,7 +37,14 @@ Don't build an open item until Mark says to start it.
     to 10:32 AM (~9.9h). His chat messages stopped ~2:52 AM, so the real
     stop was likely ~3 AM. Hours and the matching `hour_worked` XP row need
     correcting; part of this item, don't change it before he explains.
-- [ ] LAST: test the 10 PM Breakdown once everything else works.
+  - Nov 27 points: the 1:56 PM and 2:36 PM submits came before automatic
+    points went live, so that work has none yet. Mark's call (2026-11-27):
+    don't add them now; fix them as part of this item. Note that another
+    submit of Nov 27 on that same day would check those entries
+    automatically (unchecked then: 1 to-do, 1 proof, 14 session notes).
+  - Next from Mark: instructions on what to do for memory/data.
+- [ ] LAST (after the memory item): test the 10 PM Breakdown once
+  everything else works.
 
 ### Next: personal automations
 - [ ] Finance metrics: fix tap error.
