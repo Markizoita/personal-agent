@@ -76,6 +76,22 @@ discovered reactively during live testing.
     shown concretely demonstrates the behavior, not just a case where it
     doesn't apply.
 
+11. **Don't serve a web page from an n8n webhook.** Every webhook response
+    on bot.marizo.site gets a forced `Content-Security-Policy: sandbox`
+    (added upstream of n8n, so a Respond node's own headers can't undo
+    it). The page's origin becomes `"null"`, so `localStorage` throws and
+    the browser refuses to install it as an app. Host pages on GitHub
+    Pages (`docs/`) and call the webhooks from there; CORS already
+    allows it.
+
+12. **Secrets hide in URLs, not just headers.** The Telegram Bot API puts
+    the token in the path (`api.telegram.org/bot<token>/...`), so the
+    header-credential cleanup missed 5 HTTP nodes, and the nightly export
+    then published the token to this (public) repo. Anything that copies
+    workflow JSON somewhere must redact secrets, and before making
+    anything public, scan the full git history, not just the latest
+    files.
+
 ## Before building the next category
 
 Check each of the above against what's being added:
@@ -85,6 +101,9 @@ Check each of the above against what's being added:
 - Any new optional numeric/boolean tool parameter → text + defensive SQL.
 - Any new "replace the whole list" operation → upsert by key instead.
 - Any new reply-format rule → inline it, show a concrete example.
+- Any new page or UI → GitHub Pages, never an n8n webhook response.
+- Any new secret → `.env` + an n8n credential; never inline it in a
+  node's URL or body, and never commit it (this repo is public).
 - Genuinely new territory (e.g. Telegram photo messages for Notes) has
   no existing lesson to check against — look at the actual payload shape
   before guessing at its structure.
