@@ -43,11 +43,15 @@ Don't build an open item until Mark says to start it.
     removed and the held entries released, so the next submit rebuilds the
     day's breakdown and points. The Claude hook and `ingest_claude_session`
     now keep the whole day's notes (they cut to the last 14 before).
-  - Pending Mark's answers: Nov 25 (shown as Miss, but records show a full
-    day), Nov 26 hours, "Shipped" points for past days under the new rules,
-    unlogged selling work, and whether to submit Nov 27 before the stop.
-    Sources: Input Log sheet, Telegram schedule/notes/messages, n8n run
-    history (from Nov 17), Claude Code transcripts on this PC, git log.
+  - Answered (2026-11-27): one real selling item on Nov 25, the Nov 26
+    Telegram pitch entry was fake, nothing else unlogged, no MyFlow or Vibe
+    animation work, don't submit Nov 27 yet. Added empty projects "News
+    agent" and "Automation agency" (Parked).
+  - Pending Mark's confirmation: Nov 25 (shown as Miss, but records show a
+    full day) and Nov 26 hours, after seeing the day breakdown, and the
+    "Shipped" points for Nov 13, 17, 19, 24, 25, 26. Sources: Input Log
+    sheet, Telegram schedule/notes/messages, n8n run history (from Nov 17),
+    Claude Code transcripts on this PC, git log.
 - [ ] LAST (after the memory item): test the 10 PM Breakdown once
   everything else works.
 
