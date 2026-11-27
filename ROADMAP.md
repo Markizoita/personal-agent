@@ -101,14 +101,20 @@ considered done. The Telegram bot token still sits in the URL for
 path, not a header, so there's no clean way to credential-ize that one away
 with current tools.
 
-**Sequencing decision (2026-11-27, per Mark): DigitalOcean server
-snapshot next, then back to Start Up Ops's remaining dashboard work**
-(login + action tabs, built in the other cloud session). Enabling DO's
-backup toggle needs either Mark doing it himself in DO's dashboard, or a
-DigitalOcean API token if he wants this session to handle it directly -
-not yet decided which.
+**DigitalOcean server snapshot — done (2026-11-27).** Mark gave this
+session a DO API token; enabled weekly backups on the droplet
+(`MY-LAPTOP-PERSONAL-AUTOMATION`, id 620323147, $6/mo base) via the API -
++$1.20/mo (20%), Sundays, 28-day retention, confirmed via the backups/policy
+endpoint directly (next window 2026-11-29). Corrected course mid-task: the
+"Start Up Ops dashboard lives in the other session, not here" claim from
+earlier was wrong - its backend is just more n8n workflows (e.g.
+`Game State API`, a token-gated webhook), same tools this session already
+uses. Next up per Mark: build the dashboard's login + action-tab endpoints
+(start/stop, to-dos, proof, game-task logging) here, continuing from the
+pushed `game_sql.sql`/`dashboard_sql.sql`/`build_game_api.js` pattern.
 
-**Nightly backups - more detail, per Mark's request (2026-11-26), still
+**Nightly backups - more detail, per Mark's request (2026-11-26). Server
+snapshot done (above); workflow-export-to-git and database backups still
 deferred:**
 - n8n workflow export to git: needs git installed and configured with
   push access on the DigitalOcean droplet itself (not set up), plus a
@@ -118,8 +124,6 @@ deferred:**
   automatic backups or point-in-time recovery at all (that's Pro-plan,
   $25/mo and up). The alternative is a custom scheduled `pg_dump` export
   we'd build and store somewhere ourselves - real engineering, not free.
-- DigitalOcean server snapshots: the easy one - a paid toggle in DO's own
-  dashboard (droplet → Backups), no engineering needed, just a monthly fee.
 
 **Migrating the old Input Log spreadsheet data — logged as a real to-do,
 sequenced for later (2026-11-26).** Per Mark: once Start Up Ops (dashboard
