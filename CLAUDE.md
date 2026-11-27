@@ -21,5 +21,6 @@
    `node scripts/todo.js list`. Keep it current as you build, at a general
    level: one item per piece of work, never a list of steps. Add the item if
    it is missing (`add "<project>" "<text>" now|next|later|today`) and run
-   `done <id>` once it works. Don't start an item Mark hasn't asked for. A
+   `done <id>` once it works. `move <id> today|none` sets what is on today's
+   list: only what Mark picked for the day. Don't start an item Mark hasn't asked for. A
    session without `.env` (cloud) should say what to add or check off.
