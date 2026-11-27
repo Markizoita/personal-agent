@@ -101,6 +101,16 @@
   .tabs button { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
   .tabs button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
+  /* points log + rules */
+  .pt-day { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin: 16px 0 2px; }
+  .pt-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .pt-row .what { flex: 1; min-width: 0; font-size: 14px; overflow-wrap: anywhere; }
+  .pt-row small { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 2px; }
+  .pt-row small.pt-detail { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .pt-row .xp { font-size: 14px; font-weight: 700; white-space: nowrap; text-align: right; }
+  .pt-row .xp .mini { display: block; margin: 4px 0 0 auto; }
+  .pt-row.removed .what span, .pt-row.removed .xp span { text-decoration: line-through; color: var(--muted); }
+
   /* projects tab */
   .proj-card .stats { display: flex; flex-wrap: wrap; gap: 16px 28px; margin-top: 10px; }
   .proj-card .stat .n { font-family: "Space Grotesk", sans-serif; font-size: 22px; font-weight: 600; }
@@ -253,6 +263,13 @@
         </div>
         <div class="metrics-grid" id="metricsGrid"></div>
       </div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">Points log</div>
+        <div class="muted">Added automatically by the timer and when you submit.</div>
+        <details class="more" id="rulesBox"><summary>How points are earned</summary><div id="rulesList"></div></details>
+        <div id="pointsLog"><div class="muted" style="margin-top:10px">Loading…</div></div>
+        <button class="linkbtn" id="olderPoints" style="display:none">Show older</button>
+      </div>
     </div>
 
     <!-- PROJECTS -->
@@ -364,6 +381,7 @@ document.querySelectorAll('#tabNav button').forEach(b => {
     CUR_TAB = b.dataset.tab;
     ['home', 'metrics', 'projects', 'history', 'news'].forEach(t =>
       document.getElementById('tab-' + t).style.display = (t === CUR_TAB) ? 'block' : 'none');
+    if (CUR_TAB === 'metrics') loadMetrics();
     if (CUR_TAB === 'projects') loadProjects();
     if (CUR_TAB === 'history') loadHistory();
   };
@@ -481,7 +499,67 @@ document.querySelectorAll('#periodTabs button').forEach(b => {
     call('dashboard-progress', { period: PERIOD }).then(renderMetrics);
   };
 });
-async function loadMetrics() { renderMetrics(await call('dashboard-progress', { period: PERIOD })); }
+async function loadMetrics() { loadPoints(); renderMetrics(await call('dashboard-progress', { period: PERIOD })); }
+
+/* ---------- points log + rules ---------- */
+let POINTS = null;
+let POINT_DAYS = 7;
+const SOURCES = { auto: 'from your submit', timer: 'timer', import: 'imported', session_log: 'imported', proof: 'first proof of the day', submit: 'your outside work', dashboard: 'logged by you', telegram: 'logged by you' };
+const xpText = v => (Math.round(Number(v) * 10) / 10).toLocaleString('en-US');
+const worth = r => '+' + xpText(r.xp) + (r.unit === 'per time' ? '' : ' ' + r.unit);
+async function loadPoints() {
+  const res = await call('dashboard-points');
+  if (!res.ok) { if (!POINTS) $('pointsLog').innerHTML = '<div class="muted" style="margin-top:10px">Could not load the log.</div>'; return; }
+  POINTS = res; renderPoints();
+}
+function renderPoints() {
+  $('rulesList').innerHTML = (POINTS.rules || []).map(r => `<div class="pt-row"><div class="what"><span>${esc(r.name)}</span><small>${esc(r.rule || '')}</small></div>
+      <div class="xp">${esc(worth(r))}</div></div>`).join('')
+    + '<div class="muted" style="margin-top:8px">Selling and money points only come from your own entries (to-dos, proof, outside work). Plans never count, and each thing counts once. 100 points = 1 level.</div>';
+  const days = [];
+  (POINTS.entries || []).forEach(e => {
+    let d = days[days.length - 1];
+    if (!d || d.date !== e.date) days.push(d = { date: e.date, label: e.label, total: 0, rows: [] });
+    if (!e.removed) d.total += Number(e.xp);
+    d.rows.push(e);
+  });
+  $('pointsLog').innerHTML = days.slice(0, POINT_DAYS).map(d => `<div class="pt-day"><span>${esc(d.label)}</span><span>+${xpText(d.total)}</span></div>` +
+    d.rows.map(e => {
+      const times = e.source !== 'timer' && Number(e.quantity) > 1 ? (e.task === 'Money earned' ? ` $${xpText(e.quantity)}` : ` ×${xpText(e.quantity)}`) : '';
+      const hours = e.task === 'Hour worked' ? ` ${xpText(e.quantity)}h` : '';
+      const detail = [e.note, e.project].filter(Boolean).map(esc).join(' · ');
+      return `<div class="pt-row ${e.removed ? 'removed' : ''}"><div class="what"><span>${esc(e.task)}${times}${hours}</span>
+          ${detail ? `<small class="pt-detail">${detail}</small>` : ''}<small>${esc(SOURCES[e.source] || e.source)}${e.removed ? ' · removed' : ''}</small></div>
+        <div class="xp"><span>+${xpText(e.xp)}</span>${e.can_remove ? `<button class="mini" data-remove="${esc(e.id)}">Remove</button>` : ''}</div></div>`;
+    }).join('')).join('') || '<div class="muted" style="margin-top:10px">No points yet.</div>';
+  $('olderPoints').style.display = days.length > POINT_DAYS ? 'block' : 'none';
+  $('pointsLog').querySelectorAll('[data-remove]').forEach(b => b.onclick = () => confirmRemove(Number(b.dataset.remove)));
+}
+$('olderPoints').onclick = () => { POINT_DAYS += 14; renderPoints(); };
+function confirmRemove(id) {
+  const e = POINTS.entries.find(x => x.id === id);
+  if (!e) return;
+  showModal(`<h2>Remove these points?</h2>
+    <p class="muted">+${xpText(e.xp)} · ${esc(e.task)}${e.note ? ' · ' + esc(e.note) : ''}</p>
+    <p class="muted" style="margin-top:8px">It comes off your total and won't be added again.</p>
+    <button class="btn" id="mRemove" style="margin-top:16px">Remove</button>
+    <button class="linkbtn" id="mKeepPoints">Keep it</button>`);
+  $('mKeepPoints').onclick = closeModal;
+  $('mRemove').onclick = async () => {
+    $('mRemove').disabled = true;
+    const res = await call('dashboard-undo-task', { id });
+    closeModal();
+    toast(res.ok ? 'Removed' : 'Could not remove');
+    loadHome(); loadMetrics();
+  };
+}
+// The points a submit just added, for its result screen.
+function pointsHtml(pts) {
+  if (!pts || !pts.added) return '';
+  const rows = pts.added.map(a => `<div class="pt-row"><div class="what"><span>${esc(a.task)}</span><small>${esc(a.what || '')}</small></div><div class="xp">+${xpText(a.xp)}</div></div>`).join('');
+  return `<div class="section-title">Points added</div>${rows || '<div class="muted">No new points this time.</div>'}
+    <div class="muted" style="margin-top:8px">${pts.level_up ? 'Level up! ' : ''}Level ${esc(pts.level)} · ${xpText(pts.total_xp)} points total. See Metrics for the log.</div>`;
+}
 function renderMetrics(p) {
   if (!p || !p.game) return;
   const g = p.game;
@@ -639,7 +717,7 @@ async function openSubmit() {
       ? `You submitted at ${esc(p.submitted_at)}. This adds an add-on under it with your new work.`
       : `Nothing new since ${esc(p.submitted_at)}, so submitting rewrites that part. Add something below to make an add-on.`}</div>` : ''}
     <div class="section-title">Anything done outside Claude?</div>
-    <div class="muted">Pitches, meetings, claude.ai chats. Add proof if you have it.</div>
+    <div class="muted">Pitches, meetings, claude.ai chats. Add proof if you have it. Points are picked for you.</div>
     <div id="outsideRows"></div>
     <button class="mini" id="addRow" style="margin-top:10px">+ Add something</button>
     <button class="btn" id="doSubmit" style="margin-top:16px">${again ? 'Submit' : 'Submit day'}</button>
@@ -650,7 +728,7 @@ async function openSubmit() {
 }
 function addOutsideRow() {
   const row = document.createElement('div'); row.className = 'outside-row';
-  const types = ['<option value="other">Other work</option>'].concat((PREVIEW.tasks || []).map(t => `<option value="${esc(t.key)}">${esc(t.name)}</option>`)).join('');
+  const types = ['<option value="other">Let Claude pick the points</option>'].concat((PREVIEW.tasks || []).map(t => `<option value="${esc(t.key)}">${esc(t.name)}</option>`)).join('');
   const projects = ['<option value="">No project</option>'].concat((PREVIEW.projects || []).map(n => `<option value="${esc(n)}">${esc(n)}</option>`)).join('');
   row.innerHTML = `<div class="row"><select class="field otype" aria-label="Type">${types}</select><button class="mini odel" aria-label="Remove">✕</button></div>
     <input class="field owhat" placeholder="What happened?">
@@ -685,6 +763,7 @@ async function submitDay(outside) {
   const title = res.part > 1 ? `Add-on saved to ${esc(res.label)}` : `${esc(res.label)} submitted`;
   showModal(`<div class="row"><h2>${res.ok ? title : 'Submit did not finish'}</h2>${res.ok ? resultPill(res.result) : ''}</div>
     <div class="breakdown">${esc(res.breakdown || (res.ok ? 'Your day is saved, but the breakdown was not written. ' + (res.problem || '') : 'Nothing was lost. Check your connection and try again.'))}</div>
+    ${failed ? '' : pointsHtml(res.points)}
     ${failed ? '<button class="btn" id="retrySubmit" style="margin-top:16px">Try again</button>' : ''}
     <button class="btn ${failed ? 'secondary' : ''}" id="mDone" style="margin-top:12px">Close</button>`);
   $('mDone').onclick = closeModal;

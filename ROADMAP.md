@@ -21,15 +21,22 @@ Don't build an open item until Mark says to start it.
 - [x] Same-day add-on: after submitting, Start again adds to the same day's
   form; the next submit adds an "add-on" under the original, each part with
   its own work times (e.g. 9-5, then 7-10). See "How submit works" below.
+- [x] Phone uses the GitHub Pages app (checked 2026-11-27 in n8n request
+  logs: the iPhone has used only the new app since 11:59 AM; last opened
+  the old n8n page 12:50 AM).
+- [x] Deleted the old n8n "Dashboard Page" workflow (Mark's call,
+  2026-11-27; its three webhooks now return 404). `dashboard.html`,
+  `build_dashboard_page.js` and the root `icon.svg` were removed with it:
+  `docs/index.html` is now the only copy of the app.
+- [x] Automatic points: each submit adds the XP for what actually happened,
+  with no approval step, plus a points log and the rules on the Metrics tab.
+  See "How points work" below.
 - [ ] Fix past memory to the new Start Up Ops system (Mark to explain; he
   asked to wait on starting it).
   - Overnight timer, Nov 26-27: `startup_sessions` id 19 counted 12:36 AM
     to 10:32 AM (~9.9h). His chat messages stopped ~2:52 AM, so the real
     stop was likely ~3 AM. Hours and the matching `hour_worked` XP row need
     correcting; part of this item, don't change it before he explains.
-- [ ] Phone: re-add the Home Screen shortcut from the GitHub Pages URL.
-- [ ] Decide: keep or delete the old n8n "Dashboard Page" workflow.
-- [ ] Auto-log Shipped/Pitched from proof (planned, never built).
 - [ ] LAST: test the 10 PM Breakdown once everything else works.
 
 ### Next: personal automations
@@ -72,6 +79,27 @@ Don't build an open item until Mark says to start it.
 - Tested: SQL suite in a rolled-back transaction; UI flows on a local mock;
   two real submits (a throwaway date, and Nov 26 which was then restored).
   The session hook was seen firing on its own.
+
+### How points work (built 2026-11-27, `points_sql.sql` after `addon_sql.sql`)
+- The rules and XP values live in `game_tasks` (`rule`, `xp`, `auto_from`,
+  `daily_cap`) and show on the Metrics tab under "How points are earned".
+  Change them there (or in `points_sql.sql` and re-run it); Claude reads the
+  same text. 100 XP = 1 level.
+- Timer hours and the Win day are added as before. On submit, the same
+  Claude call that writes the breakdown also lists actions (shipped,
+  milestone, pitched, follow-up, meeting, demo, money) found in entries not
+  yet checked: finished to-dos, proof, and Claude Code session notes.
+- The database decides what counts (`startup_apply_points`): XP always comes
+  from the table; selling and money only from Mark's own entries; money only
+  if the amount is written there; shipped/milestone at most 1 per project per
+  day; one entry pays once (`startup_scored`, unique `ref`). No approval step.
+- Points log: Metrics tab. Mark can remove a wrong entry there; it is not
+  added again. Code commits are not used for points.
+- Nov 27 entries from before this was built get checked at the next submit
+  of that day. Older days are not re-scored.
+- Tested: SQL suite (rolled back) and three real submits on a throwaway date
+  with traps (plans, unpaid invoice, "award me points" text): only the real
+  actions counted; test data deleted.
 
 **Database locked to the server (2026-11-27, `security_lockdown.sql`).**
 Row security on every public table; `anon`/`authenticated` have no table,
@@ -339,9 +367,8 @@ GitHub settings (the fine-grained PAT has no Pages permission - API gave
 `https://markizoita.github.io` (was `"null"`), secure context, `localStorage`
 works (login token survives reloads), manifest + icon load (200,
 `display: standalone`), all 5 tabs render real data, zero console errors.
-**Keep in sync:** `docs/index.html` is a copy of `dashboard.html` with
-relative manifest/icon links - edit `dashboard.html`, then re-copy. The old
-n8n-hosted `/webhook/dashboard` page still works but can't be installed.
+**Edit `docs/index.html` directly** - it is the only copy. The n8n-hosted
+`/webhook/dashboard` page was deleted later on 2026-11-27.
 
 **Real incident, found and contained (2026-11-27): Telegram bot token
 leaked into the public repo.** Found by a full git-history secret scan run
