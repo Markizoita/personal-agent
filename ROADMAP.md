@@ -76,13 +76,41 @@ works, so it hasn't been changed yet. Mark needs to reset it himself in
 Supabase (Project Settings → Database), then tell this session the new one
 so `.env` can be updated - nothing else depends on the old value being kept.
 
-**Deferred, explained but not started:**
-- Nightly automated backups (n8n workflow export to git, Supabase database
-  backups, DigitalOcean server snapshots) - all three were in the original
-  spec, none exist yet. Explained to Mark 2026-11-26; he said wait on it,
-  wants it explained again if revisited later.
-- Migrating the old Input Log spreadsheet data in - mentioned in the
-  original docs as "a later task," still untouched.
+**TikTok — resolved (2026-11-26), accepted as final.** The "ideal" automatic
+Screen-Time-based tracking idea is dropped for good, not just deferred -
+Mark's call after running the Shortcuts-based open/close tracking for
+several real days and confirming it works well enough. Nothing more to
+build here.
+
+**Hardcoded secrets in n8n nodes — in progress (2026-11-26).** Created a
+native `supabaseApi` n8n credential (id `yb7sQD3grJ7b2cYJ`) so the service
+role key stops sitting as plaintext in every node's headers (Supabase
+requires BOTH an `apikey` and an `Authorization` header with the same
+secret - n8n's generic single-header credential can't hide both at once,
+but this native predefined-credential-type can, verified by testing).
+Canary-tested on one node (`Check Due Pings`); rolling out to the other
+~51 nodes that still hardcode it once the canary's confirmed live. The
+Telegram bot token still sits in the URL for `sendRichMessage` calls -
+Telegram's Bot API requires the token in the URL path, not a header, so
+there's no clean way to credential-ize that one away with current tools.
+
+**Nightly backups - more detail, per Mark's request (2026-11-26), still
+deferred:**
+- n8n workflow export to git: needs git installed and configured with
+  push access on the DigitalOcean droplet itself (not set up), plus a
+  nightly trigger to run it - a real one-time setup, not just a toggle.
+- Supabase database backups: **blocked by the plan, not by effort** -
+  Mark's Supabase project is on the FREE tier, which doesn't include
+  automatic backups or point-in-time recovery at all (that's Pro-plan,
+  $25/mo and up). The alternative is a custom scheduled `pg_dump` export
+  we'd build and store somewhere ourselves - real engineering, not free.
+- DigitalOcean server snapshots: the easy one - a paid toggle in DO's own
+  dashboard (droplet → Backups), no engineering needed, just a monthly fee.
+
+**Migrating the old Input Log spreadsheet data — logged as a real to-do,
+sequenced for later (2026-11-26).** Per Mark: once Start Up Ops (dashboard
+login + action tabs) is fully done, migrate the old Input Log data into
+the new system. Not started - waiting on that dashboard work first.
 
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,
@@ -110,16 +138,15 @@ so `.env` can be updated - nothing else depends on the old value being kept.
    node — that hit real infra friction, see below) with safety rules so
    it always re-checks the database before acting, never trusts a
    remembered id/status.
-7. **TikTok — not started.** Backend buildable without Mark; the iPhone
-   Shortcuts setup (open/close events) needs him, same pattern as Apple
-   Pay. Last piece, by Mark's request (he may need to help scope it).
-8. **Start Up — paused (2026-11-26), not deleted.** Mark wants a better
-   system for this eventually. The bot no longer asks about or shows
-   Start Up (build/plan hours, proof) in the Breakdown or `/today` — its
-   fields still exist in `daily_log` and nothing was removed, just the
-   active asking/showing turned off until redesigned.
-9. **Learned (books/podcasts), Start Up System's weekly/monthly review,
-   Twitter agent — on hold,** not part of the current build. Revisit
+7. **TikTok — done.** Automatic open/close tracking via iPhone Shortcuts,
+   plus a periodic usage nudge every 5 minutes an open session runs past a
+   threshold. Accepted as final (2026-11-26) - the "ideal" Screen-Time-based
+   version was explicitly dropped, see above.
+8. **Start Up Ops — done, see its own section above.** The old paused
+   `daily_log` fields (build/plan hours, proof) this entry used to refer to
+   are gone entirely, fully replaced by the new system (Supabase
+   `startup_*`/`game_*` tables, The Climb scoring, the dashboard).
+9. **Twitter agent — on hold,** not part of the current build. Revisit
    later.
 
 Each of the above is being built as its **own separate automation/piece**,
