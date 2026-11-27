@@ -215,6 +215,26 @@ each action to completion rather than guessing timing. Confirmed fixed
 two ways: the bot/dashboard/n8n API all back to real 200s, and free memory
 now ~1.6GB of 2GB - a real, verified fix, not just "it's back up for now."
 
+**Windows app install — real blocker found (2026-11-27), not yet solved.**
+Built a real icon (`icon.svg`, orange/cream, wired into the manifest and
+page `<link rel="icon">`) - that part's done. But testing installability
+directly (checked `window.origin` in a real browser) showed the page's
+origin comes back `"null"` - n8n (or its Caddy reverse proxy in front of
+it, visible via the `Via` header) forces a
+`Content-Security-Policy: sandbox ...` on every webhook response, missing
+`allow-same-origin`. Tried overriding it with my own CSP header on the
+response - didn't take, confirming it's injected upstream of my node, not
+something a workflow can control. This is also the real cause of the
+`localStorage` bug fixed earlier - same root issue, not an environment
+fluke. A sandboxed/opaque-origin page fails Chrome/Edge's PWA install
+criteria, so "Install as app" likely won't work while served this way.
+No droplet shell access to fix Caddy's config directly. Best option not
+yet executed: host `dashboard.html` as a static page on GitHub Pages
+instead (same repo, already set up) - zero sandboxing there, and it'd
+still call the exact same n8n webhook APIs for all data (CORS already
+allows `*`) - only the page's own hosting moves, nothing backend-side
+changes. Needs Mark's go-ahead before doing that migration.
+
 **Sequencing confirmed (2026-11-27), per Mark: git export → Windows app
 install → migrate the old Input Log data in.** That order, once the git
 token's in hand.
