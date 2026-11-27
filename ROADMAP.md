@@ -21,8 +21,13 @@ Don't build an open item until Mark says to start it.
     to 10:32 AM (~9.9h). His chat messages stopped ~2:52 AM, so the real
     stop was likely ~3 AM. Hours and the matching `hour_worked` XP row need
     correcting; part of this item, don't change it before he explains.
-- [ ] Old UI shows first when the app opens, then the new UI replaces it.
-  (Clue found while deploying: GitHub Pages caches the page for ~10 min.)
+- [x] Blank Home flashed before the data on open: a loading screen now
+  shows until data arrives (with "Try again" when offline), and the open
+  app refreshes quietly when you come back to it. Verified live.
+- [ ] Same-day add-on: after submitting, Start again adds to today's form;
+  the next submit adds an "add-on" under the original, each part with its
+  own work times (e.g. 9-5, then 7-10). Design not yet confirmed; today a
+  resubmit rewrites the one breakdown.
 - [ ] Phone: re-add the Home Screen shortcut from the GitHub Pages URL.
 - [ ] Decide: keep or delete the old n8n "Dashboard Page" workflow.
 - [ ] Auto-log Shipped/Pitched from proof (planned, never built).
