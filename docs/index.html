@@ -28,7 +28,13 @@
   h1, h2 { font-family: "Space Grotesk", Inter, sans-serif; margin: 0; }
 
   /* login */
-  #login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  #login { min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 16px; }
+  /* shown until the first data arrives, so a half-empty Home never flashes */
+  #loading { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 16px; text-align: center; }
+  #loading h1 { font-size: 22px; }
+  .spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
   #login .box { width: 100%; max-width: 320px; text-align: center; }
   #login h1 { font-size: 22px; margin-bottom: 24px; }
   #login input { width: 100%; padding: 14px 16px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 16px; margin-bottom: 12px; }
@@ -128,6 +134,13 @@
 </style>
 </head>
 <body>
+
+<div id="loading">
+  <h1>Start Up Ops</h1>
+  <div class="spinner" id="spinner" aria-hidden="true"></div>
+  <div class="muted" id="loadingMsg" role="status">Loading your day…</div>
+  <button class="btn" id="retryLoad" style="display:none; max-width:220px">Try again</button>
+</div>
 
 <div id="login">
   <div class="box">
@@ -317,8 +330,7 @@ async function doLogin() {
 }
 function logout() {
   storage.remove('su_token'); TOKEN = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login').style.display = 'flex';
+  showScreen('login');
 }
 function fmtHours(mins) { const h = Math.floor(mins / 60), m = Math.round(mins % 60); return h > 0 ? `${h}h ${m}m` : `${m}m`; }
 function resultPill(r) {
@@ -348,7 +360,7 @@ document.querySelectorAll('#tabNav button').forEach(b => {
 /* ---------- home ---------- */
 async function loadHome() {
   const h = await call('dashboard-home');
-  if (!h.ok) return;
+  if (!h.ok) return false;
   TODAY = h.date;
   MINUTES_TODAY = h.minutes_today || 0;
   $('hdrDate').textContent = h.date_label || '';
@@ -401,6 +413,7 @@ async function loadHome() {
   $('tomorrowBox').innerHTML = (h.tomorrow && h.tomorrow.length)
     ? h.tomorrow.map(t => `<div style="font-size:14px;padding:4px 0"><span class="muted">${esc(t.project)}</span> ${esc(t.text)}</div>`).join('')
     : '<div class="muted">Nothing planned yet.</div>';
+  return true;
 }
 
 /* ---------- to-do rows (Home and Projects) ---------- */
@@ -697,12 +710,30 @@ async function logTask() {
   } else toast(res.reason || 'Could not log');
 }
 
-function showApp() {
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadHome(); loadMetrics();
+function showScreen(name) {
+  $('loading').style.display = name === 'loading' ? 'flex' : 'none';
+  $('login').style.display = name === 'login' ? 'flex' : 'none';
+  $('app').style.display = name === 'app' ? 'block' : 'none';
 }
-if (TOKEN) showApp();
+async function showApp() {
+  showScreen('loading');
+  $('spinner').style.display = 'block'; $('retryLoad').style.display = 'none';
+  $('loadingMsg').textContent = 'Loading your day…';
+  const [loaded] = await Promise.all([loadHome(), loadMetrics()]);
+  if (!TOKEN) return;
+  if (loaded) { showScreen('app'); return; }
+  $('spinner').style.display = 'none'; $('retryLoad').style.display = 'block';
+  $('loadingMsg').textContent = "Couldn't load your day. Check your connection.";
+}
+$('retryLoad').onclick = showApp;
+// Coming back to the open app: refresh quietly, unless something is half-typed.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !TOKEN || $('app').style.display !== 'block') return;
+  if ($('overlay').style.display !== 'none' || document.querySelector('.proof-prompt')) return;
+  if (document.activeElement && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  loadHome(); if (CUR_TAB === 'metrics') loadMetrics();
+});
+if (TOKEN) showApp(); else showScreen('login');
 </script>
 </body>
 </html>
