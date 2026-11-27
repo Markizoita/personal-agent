@@ -70,11 +70,9 @@ entirely - updated `get_daily_form`/`upsert_daily_log` to match, removed the
 dead prompt instruction that referenced them. Fully superseded by the new
 system, nothing left behind.
 
-**Still open / not rotated: the Supabase database password.** It was pasted
-in the cloud session's chat; confirmed (2026-11-26) the OLD password still
-works, so it hasn't been changed yet. Mark needs to reset it himself in
-Supabase (Project Settings → Database), then tell this session the new one
-so `.env` can be updated - nothing else depends on the old value being kept.
+**Supabase database password — rotated (2026-11-26).** It had been pasted in
+the cloud session's chat, so Mark reset it in Supabase and the new one went
+into `.env` (`PG_CONN`). `run_sql.js`/`query_sql.js` connect with it.
 
 **TikTok — resolved (2026-11-26), accepted as final.** The "ideal" automatic
 Screen-Time-based tracking idea is dropped for good, not just deferred -
