@@ -1,42 +1,23 @@
 # Personal Agent Roadmap
 
-## Current to-do list — agreed 2026-11-27, NOTHING BUILT YET
+## Current to-do list (updated 2026-11-27)
 
 Mirrors Mark's "Systems Plan" doc (the source of truth for status). This
-section supersedes any older plan below where they disagree. Don't build
-an item until Mark says to start it.
+section supersedes any older plan below where they disagree. Mark's rule
+for that doc: check items off when done and keep checked ones at the top.
+Don't build an open item until Mark says to start it.
 
 ### Now: Start Up Ops
-**Start/Stop**
-- [ ] Fix start/stop. One Start/Stop button, no set 9:00 time. Stop asks
-  "Done for today?": Submit my day / Just a break / Keep working. (The
-  three-choice wording is Claude's proposal; nothing auto-stops the timer
-  today.)
-
-**Homepage + submit**
-- [ ] Fix homepage.
-  - Submit has an automatic part: Claude pulls everything it can see
-    (timer, to-dos, proof, code commits, Claude Code sessions), then writes
-    the day's breakdown.
-  - And a manual part: before it goes through, Mark adds outside work
-    (pitches, meetings, claude.ai chats) with proof.
-  - Claude Code sessions need a small hook on Mark's PC that sends a short
-    session summary to the app (approved 2026-11-27 as part of the plan).
-    claude.ai chats and cloud sessions can't be read automatically.
-  - A section to see and add new things to do while working.
-- [ ] Old UI shows first when the app opens, then the new UI replaces it.
-
-**Project to-dos**
-- [ ] To-dos belong to projects: a project can hold many (not all on Home),
-  added from the Projects tab; unfinished ones stay there instead of
-  dropping off. (Today Home shows only today + tomorrow, and
-  `roll_startup_todos()` exists but nothing calls it.)
-  - Covers outside work too (e.g. pitching someone), works like a schedule,
-    still called "to-do list."
-  - Finishing an item lets Mark attach proof.
-
-**Other**
+- [x] Fix start/stop: one Start/Stop button, no 9:00 time. Stop asks "Done
+  for today?": Submit my day / Just a break / Keep working. (Nothing
+  auto-stops a forgotten timer.)
+- [x] Fix homepage: submit, outside-work step, "new things to do" quick-add,
+  breakdown card. See "How submit works" below.
+- [x] To-dos belong to projects (Projects tab holds each list, optional
+  date, "+ Today", finishing one can attach proof).
 - [ ] Fix past memory to the new Start Up Ops system (Mark to explain).
+- [ ] Old UI shows first when the app opens, then the new UI replaces it.
+  (Clue found while deploying: GitHub Pages caches the page for ~10 min.)
 - [ ] Phone: re-add the Home Screen shortcut from the GitHub Pages URL.
 - [ ] Decide: keep or delete the old n8n "Dashboard Page" workflow.
 - [ ] Auto-log Shipped/Pitched from proof (planned, never built).
@@ -51,6 +32,25 @@ an item until Mark says to start it.
 - [ ] Pre-narrow idea season system: how to build and manage multiple
   projects.
 - [ ] Project automations: decide which project to work on.
+
+### How submit works (built 2026-11-27)
+- `homepage_sql.sql` (applied; safe to re-run): `startup_todos.day` null =
+  project-only; proof can be dated and linked to a to-do; hour XP goes to
+  the day a session started; `startup_submit_date()` picks the last timer
+  day (so past-midnight work stays on its day); `startup_submit_day()`
+  records outside work (retry-safe), closes the day and returns the facts.
+- Dashboard Actions API (`build_dashboard_actions_api.js`),
+  `dashboard-submit`: records and gathers → commits from every branch of
+  this repo (nightly exports skipped) → one Claude call
+  (`claude-opus-5-5`, effort low, n8n "Anthropic account" credential) →
+  saves `startup_daily_results.breakdown`. About 1-2 cents per submit.
+- `scripts/claude_session_hook.js`, run by a user-level Stop hook in
+  `~/.claude/settings.json` (remove that block to turn it off): sends only
+  end-of-turn summaries, changed file names and active minutes (never user
+  messages), redacted, to `claude-session` with `CLAUDE_HOOK_SECRET`.
+- `startup_submit_day`/hook tables are server-only (anon revoked).
+- Tested: SQL suite in a rolled-back transaction; UI flows on a local mock;
+  two real submits (a throwaway date, and Nov 26 which was then restored).
 
 ---
 
