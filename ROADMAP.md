@@ -179,6 +179,25 @@ table never built), so it's left out rather than faked. Checked the new
 JS for syntax errors with `node --check` before deploying this time, then
 re-verified live in a real browser across all 5 tabs - clean.
 
+**Database backups — explicitly deferred (2026-11-27), not forgotten.**
+Checked current pricing: Supabase Pro is $25/mo (per organization, covers
+every project under it), includes daily automatic backups. Mark's call:
+not worth it right now - revisit if it ever feels needed. Workflow-export-
+to-git is being built instead (see below) since that one doesn't need a
+paid upgrade.
+
+**n8n workflow export to git — in progress (2026-11-27).** Fully doable
+without any droplet shell access: a nightly n8n schedule trigger calls
+n8n's own REST API to fetch the current workflow JSON, then commits it
+straight to the `personal-agent` GitHub repo via GitHub's Contents API -
+no SSH, no git installed server-side. Waiting on a GitHub fine-grained
+Personal Access Token from Mark (repo-scoped, Contents: Read and write) to
+store as an n8n credential before this can be built and tested.
+
+**Sequencing confirmed (2026-11-27), per Mark: git export → Windows app
+install → migrate the old Input Log data in.** That order, once the git
+token's in hand.
+
 **Nightly backups - more detail, per Mark's request (2026-11-26). Server
 snapshot done (above); workflow-export-to-git and database backups still
 deferred:**
