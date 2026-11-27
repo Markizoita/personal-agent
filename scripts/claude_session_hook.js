@@ -73,7 +73,8 @@ function summarize(transcript, today) {
   times.sort((a, b) => a - b);
   let active = 0;
   for (let i = 1; i < times.length; i++) if (times[i] - times[i - 1] <= AWAY_GAP_MS) active += times[i] - times[i - 1];
-  return { minutes: Math.round(active / 60000), notes: recaps.length ? recaps.slice(-14) : replies.slice(-8), files };
+  // keep the whole day: a long day's earliest work still belongs in its breakdown and points
+  return { minutes: Math.round(active / 60000), notes: recaps.length ? recaps.slice(-120) : replies.slice(-40), files };
 }
 
 async function main(input) {
@@ -86,7 +87,7 @@ async function main(input) {
   const { minutes, notes, files } = summarize(fs.readFileSync(hook.transcript_path, 'utf8'), today);
   if (!notes.length && !files.length) return;
   const names = [...new Set(files.filter(f => !/[\\/](AppData|\.claude)[\\/]/i.test(f)).map(f => path.basename(f)))].slice(-12);
-  const summary = redact(notes.map(n => '- ' + n).join('\n') + (names.length ? '\nFiles changed: ' + names.join(', ') : ''), env).slice(-4000);
+  const summary = redact(notes.map(n => '- ' + n).join('\n') + (names.length ? '\nFiles changed: ' + names.join(', ') : ''), env).slice(-40000);
   const payload = { session_id: hook.session_id, day: today, project: projectFor(files, hook.cwd), minutes, summary };
   if (process.argv.includes('--dry-run')) { console.log(JSON.stringify(payload, null, 2)); return; }
   await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },

@@ -377,7 +377,7 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'bad secret');
   end if;
   insert into claude_sessions (session_id, day, project, minutes, summary, updated_at)
-  values (left(p_session_id, 100), p_day::date, left(coalesce(p_project, 'Claude session'), 80), greatest(coalesce(p_minutes, 0), 0), left(coalesce(p_summary, ''), 4000), now())
+  values (left(p_session_id, 100), p_day::date, left(coalesce(p_project, 'Claude session'), 80), greatest(coalesce(p_minutes, 0), 0), left(coalesce(p_summary, ''), 40000), now())
   on conflict (session_id, day) do update set
     project = excluded.project, minutes = excluded.minutes, summary = excluded.summary, updated_at = now();
   return jsonb_build_object('ok', true);

@@ -33,22 +33,21 @@ Don't build an open item until Mark says to start it.
   See "How points work" below.
 - [ ] Fix past memory to the new Start Up Ops system (Mark to explain; he
   asked to wait on starting it).
-  - Overnight timer, Nov 26-27: `startup_sessions` id 19 counted 12:36 AM
-    to 10:32 AM (~9.9h). His chat messages stopped ~2:52 AM, so the real
-    stop was likely ~3 AM. Hours and the matching `hour_worked` XP row need
-    correcting; part of this item, don't change it before he explains.
-  - Nov 27 points: the 1:56 PM and 2:36 PM submits came before automatic
-    points went live, so that work has none yet. Mark's call (2026-11-27):
-    don't add them now; fix them as part of this item, and hold them until
-    then. Held: 14 entries from before 2:36 PM (1 to-do, 1 proof, 12
-    session notes) as `startup_scored` rows with `held` set (their text is
-    kept there). To score them: read that text, then delete those rows
-    (`log_date = '2026-11-27' and held is not null`). Notes no longer in
-    `claude_sessions` need scoring from the `held` text itself.
-  - Found while holding: `scripts/claude_session_hook.js` keeps only the
-    last 14 recaps (and 4,000 characters) per session, so on a long day the
-    earliest work drops out of the breakdown and points. Not changed yet.
-  - Next from Mark: instructions on what to do for memory/data.
+  - Mark's instructions (2026-11-27): rebuild startup history Nov 13 to now
+    from every record, ask about anything unclear, and push history changes
+    only after those questions are answered. Startup work only, not personal
+    data; exact times not required.
+  - Done 2026-11-27 (all tables snapshotted first into `startup_backups`):
+    overnight stretch now 12:36-3:00 AM; today's timer replaced by one
+    running stretch from 11:00 AM (source `correction`); both Nov 27 submits
+    removed and the held entries released, so the next submit rebuilds the
+    day's breakdown and points. The Claude hook and `ingest_claude_session`
+    now keep the whole day's notes (they cut to the last 14 before).
+  - Pending Mark's answers: Nov 25 (shown as Miss, but records show a full
+    day), Nov 26 hours, "Shipped" points for past days under the new rules,
+    unlogged selling work, and whether to submit Nov 27 before the stop.
+    Sources: Input Log sheet, Telegram schedule/notes/messages, n8n run
+    history (from Nov 17), Claude Code transcripts on this PC, git log.
 - [ ] LAST (after the memory item): test the 10 PM Breakdown once
   everything else works.
 
