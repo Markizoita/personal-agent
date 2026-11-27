@@ -293,10 +293,33 @@ deferred:**
   $25/mo and up). The alternative is a custom scheduled `pg_dump` export
   we'd build and store somewhere ourselves - real engineering, not free.
 
-**Migrating the old Input Log spreadsheet data — logged as a real to-do,
-sequenced for later (2026-11-26).** Per Mark: once Start Up Ops (dashboard
-login + action tabs) is fully done, migrate the old Input Log data into
-the new system. Not started - waiting on that dashboard work first.
+**Old Input Log data migrated — done and verified (2026-11-27).** The
+"Input Log" was a Claude Sheet artifact (not Google Drive), read through
+the Claude Docs connector: 12 filled days, Nov 13-24 (Nov 25-26 empty
+Misses). Imported in one all-or-nothing transaction that refuses to run
+twice. It covers 8 work sessions on "Personal agent" (28.5h, `source =
+'import'`, start times from the old Schedule column where given), 8 proof
+entries, daily results (Off days kept with reasons), and mood/food/
+exercise into `daily_log`. Per Mark, the old days **count toward the
+game**: 5 XP/hour + 20 XP/Win, same rates as live play, so 302.5 XP,
+Level 4, with Showing Up + Builder earned. Results use the new rule
+(proof = Win), so Nov 21 is now a Win; the old sheet called it "Showed
+up." `game_start_date()` moved from Nov 26 to Nov 13
+(`fix_game_start_date.sql`) so streak, weather and history include them.
+**Skipped on purpose:** spending (already in the DB from the bot, matched
+to the cent), and wake/start checkboxes, schedule, learned and TikTok
+(the new tables track live timestamps the sheet never had). The sheet
+stays untouched as the archive. The import SQL holds personal data, so
+it's NOT in this public repo. Verified per day against the sheet and on
+the live dashboard. Also fixed a display bug this surfaced: Metrics'
+hours change showed raw floats ("2.6999999999999993h"), now rounded to
+one decimal.
+
+**Windows app — ready, needs Mark's click.** Added real PNG icons
+(192/512, rendered from `icon.svg` with headless Edge) to
+`docs/manifest.json`. Install: open https://markizoita.github.io/personal-agent/
+in Edge → "App available" icon in the address bar (or ⋯ → Apps →
+Install this site as an app).
 
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,

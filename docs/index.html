@@ -278,7 +278,7 @@ function resultPill(r) {
 }
 function fmtVal(v, unit) {
   if (unit === 'dollars') return '$' + Math.round(v);
-  if (unit === 'hours') return v + 'h';
+  if (unit === 'hours') return Math.round(v * 10) / 10 + 'h';
   return Math.round(v);
 }
 
