@@ -14,12 +14,20 @@ auto-load it (README claimed this before it was true - fixed).
 
 **Windows dashboard — in progress, being built in a separate cloud Claude
 Code session (not this one), per the original plan.** Progress tab (level/
-XP/rank/streak) is done. Plan for the rest: (1) read-only tabs first -
-Progress, Projects, History; (2) action tabs after - Home's Start/Stop, add
-to-do, log proof - gated behind a real login, since the old web app got
-taken down for having no auth and being publicly writable. Reads from the
-same Supabase tables (`startup_*`) built here for the Telegram side - no
-conflict, just two front-ends on one dataset.
+XP/rank/streak) is done, including a "Climb scene" mountain visual (ranks
+as checkpoints, weather toggle, a climber figure). Plan for the rest:
+(1) read-only tabs first - Progress, Projects, History; (2) action tabs
+after - Home's Start/Stop, add to-do, log proof - gated behind a real
+login, since the old web app got taken down for having no auth and being
+publicly writable. Reads from the same Supabase tables (`startup_*`) built
+here for the Telegram side - no conflict, just two front-ends on one
+dataset.
+
+**Sequencing decision (2026-11-26, per Mark): finish login + installing it
+as a Windows app FIRST** (in the dashboard session), before touching the
+mountain-climb visual again - Mark wants that visual redone/polished, and
+wants that redo done in THIS session (Claude Code desktop) using its
+design/artifact tooling, not the dashboard session. Paused, not dropped.
 
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,
