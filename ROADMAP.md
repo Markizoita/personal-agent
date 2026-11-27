@@ -58,7 +58,9 @@ Row security on every public table; `anon`/`authenticated` have no table,
 sequence or function access; new objects start locked. n8n (service role)
 and `run_sql.js` are unaffected. Verified: public key gets 401, app
 screens load, the bot's next scheduled run succeeded. The old "Daily Log"
-claude.ai page, which read the database directly, no longer works.
+claude.ai page was already non-functional before this (the public key
+could not read `daily_log`, and its `web-chat` webhook is gone); nothing
+current depends on it.
 
 ---
 
