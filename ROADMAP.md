@@ -315,6 +315,27 @@ the live dashboard. Also fixed a display bug this surfaced: Metrics'
 hours change showed raw floats ("2.6999999999999993h"), now rounded to
 one decimal.
 
+**Pre-log history + Nov 26-27 filled in — done and verified (2026-11-27),
+per Mark ("do this for all data and days").**
+- Pre-log hours came from `Build Hours.md` (Claude conversation time) and
+  the "Development Deliverable Log" doc: Vibe animation 15.3h (Sep 11-18)
+  and MyFlow 3.2h (Sep 3 - Nov 2), as two Parked projects, plus 2.5h of
+  Nov 2 planning on Personal agent. Days under 10 minutes were skipped.
+- Proof was added only where real evidence exists: `vibe-anim/LOG.md`
+  plus file dates, MyFlow project file dates, and the deliverable log.
+  That makes 8 of those 9 days Wins. MyFlow Sep 3 has no surviving
+  evidence, so it stays "Showed up."
+- Nov 26 was rebuilt from the Claude session log: 7 active blocks, 7.6h,
+  with gaps over 15 min counted as away. These replaced 4 start/stop test
+  taps (3 min) and came with proof of what shipped (from git commits), so
+  it's now a Win.
+- Nov 27's proof went through the real `log_startup_proof` function, and
+  4 to-dos for the rest of the day went through `add_startup_todo`.
+- Totals: 645.7 XP, Level 7, 18 Win days. History still shows only the
+  last 30 days, so the September work lives in Projects and the totals.
+- Limit: only this machine's Claude session log was available. Time in
+  the cloud session or claude.ai chats isn't counted.
+
 **Windows app — ready, needs Mark's click.** Added real PNG icons
 (192/512, rendered from `icon.svg` with headless Edge) to
 `docs/manifest.json`. Install: open https://markizoita.github.io/personal-agent/
