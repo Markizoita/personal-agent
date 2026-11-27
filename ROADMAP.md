@@ -1,5 +1,59 @@
 # Personal Agent Roadmap
 
+## Current to-do list — agreed 2026-11-27, NOTHING BUILT YET
+
+Mirrors Mark's "Systems Plan" doc (the source of truth for status). This
+section supersedes any older plan below where they disagree. Don't build
+an item until Mark says to start it.
+
+### Now: Start Up Ops
+**Start/Stop**
+- [ ] Fix start/stop. One Start/Stop button, no set 9:00 time. Stop asks
+  "Done for today?": Submit my day / Just a break / Keep working. (The
+  three-choice wording is Claude's proposal; nothing auto-stops the timer
+  today.)
+
+**Homepage + submit**
+- [ ] Fix homepage.
+  - Submit has an automatic part: Claude pulls everything it can see
+    (timer, to-dos, proof, code commits, Claude Code sessions), then writes
+    the day's breakdown.
+  - And a manual part: before it goes through, Mark adds outside work
+    (pitches, meetings, claude.ai chats) with proof.
+  - Claude Code sessions need a small hook on Mark's PC that sends a short
+    session summary to the app (approved 2026-11-27 as part of the plan).
+    claude.ai chats and cloud sessions can't be read automatically.
+  - A section to see and add new things to do while working.
+- [ ] Old UI shows first when the app opens, then the new UI replaces it.
+
+**Project to-dos**
+- [ ] To-dos belong to projects: a project can hold many (not all on Home),
+  added from the Projects tab; unfinished ones stay there instead of
+  dropping off. (Today Home shows only today + tomorrow, and
+  `roll_startup_todos()` exists but nothing calls it.)
+  - Covers outside work too (e.g. pitching someone), works like a schedule,
+    still called "to-do list."
+  - Finishing an item lets Mark attach proof.
+
+**Other**
+- [ ] Fix past memory to the new Start Up Ops system (Mark to explain).
+- [ ] Phone: re-add the Home Screen shortcut from the GitHub Pages URL.
+- [ ] Decide: keep or delete the old n8n "Dashboard Page" workflow.
+- [ ] Auto-log Shipped/Pitched from proof (planned, never built).
+- [ ] LAST: test the 10 PM Breakdown once everything else works.
+
+### Next: personal automations
+- [ ] Finance metrics: fix tap error.
+- [ ] TikTok tracking: no notification after 10 minutes.
+
+### Later
+- [ ] News agent — once personal automations are done.
+- [ ] Pre-narrow idea season system: how to build and manage multiple
+  projects.
+- [ ] Project automations: decide which project to work on.
+
+---
+
 ## Status / to-do (2026-11-26, updated — Learned + TikTok done, Start Up Ops v1 in progress)
 
 Done: Wake up, Health, Finance, Schedule, Notes, conversation memory,
@@ -7,7 +61,8 @@ Learned, TikTok (including the periodic usage nudge). Start Up Ops v1 is
 the current build (see its own section below) — a from-scratch redesign,
 replacing the old paused Start Up fields in `daily_log`.
 
-**Git repo — done (2026-11-26).** Private repo at
+**Git repo — done (2026-11-26; PUBLIC since 2026-11-27 for GitHub Pages, so
+never commit secrets or personal data).** Repo at
 github.com/Markizoita/personal-agent, all build scripts/SQL/docs, secrets
 scrubbed into a gitignored `.env`. `run_sql.js`/`query_sql.js` now actually
 auto-load it (README claimed this before it was true - fixed).
