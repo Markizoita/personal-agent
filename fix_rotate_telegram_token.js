@@ -7,7 +7,6 @@ const { execSync } = require('child_process');
 const BASE = 'https://bot.marizo.site/api/v1';
 const KEY = process.env.N8N_API_KEY;
 const NEW = process.env.TELEGRAM_BOT_TOKEN;
-const OLD_CRED_ID = '8H0hBfrPobhcvfBu';
 const TOKEN_IN_URL = /api\.telegram\.org\/bot\d{8,10}:AA[A-Za-z0-9_-]{30,}\//g;
 
 function api(method, url, body) {
@@ -32,14 +31,20 @@ const me = JSON.parse(execSync(`curl -s "https://api.telegram.org/bot${NEW}/getM
 if (!me.ok) throw new Error('New token rejected by Telegram getMe: ' + me.description);
 console.log('New token valid for bot @' + me.result.username);
 
+const workflows = api('GET', '/workflows?limit=250').data.map(({ id }) => api('GET', `/workflows/${id}`));
+const oldCredIds = new Set(workflows.flatMap(wf => wf.nodes
+  .filter(n => n.credentials && n.credentials.telegramApi)
+  .map(n => n.credentials.telegramApi.id)));
+console.log('Telegram credentials in use:', [...oldCredIds]);
+
 const cred = api('POST', '/credentials', {
   name: 'Telegram account', type: 'telegramApi',
   data: { accessToken: NEW, baseUrl: 'https://api.telegram.org' }
 });
 console.log('Created credential', cred.id);
 
-for (const { id } of api('GET', '/workflows?limit=250').data) {
-  const wf = api('GET', `/workflows/${id}`);
+for (const wf of workflows) {
+  const id = wf.id;
   let urls = 0, creds = 0;
   for (const node of wf.nodes) {
     const p = node.parameters || {};
@@ -47,7 +52,7 @@ for (const { id } of api('GET', '/workflows?limit=250').data) {
       const swapped = p.url.replace(TOKEN_IN_URL, `api.telegram.org/bot${NEW}/`);
       if (swapped !== p.url) { p.url = swapped; urls++; }
     }
-    if (node.credentials && node.credentials.telegramApi && node.credentials.telegramApi.id === OLD_CRED_ID) {
+    if (node.credentials && node.credentials.telegramApi && oldCredIds.has(node.credentials.telegramApi.id)) {
       node.credentials.telegramApi = { id: cred.id, name: cred.name };
       creds++;
     }
@@ -59,8 +64,10 @@ for (const { id } of api('GET', '/workflows?limit=250').data) {
   console.log(`${wf.name}: ${urls} URLs, ${creds} credential refs updated | active: ${act}`);
 }
 
-api('DELETE', `/credentials/${OLD_CRED_ID}`);
-console.log('Deleted old credential', OLD_CRED_ID);
+for (const oldId of oldCredIds) {
+  api('DELETE', `/credentials/${oldId}`);
+  console.log('Deleted old credential', oldId);
+}
 
 const hook = JSON.parse(execSync(`curl -s "https://api.telegram.org/bot${NEW}/getWebhookInfo"`).toString()).result;
 console.log('Webhook host:', new URL(hook.url).host, '| pending:', hook.pending_update_count, '| last error:', hook.last_error_message || 'none');

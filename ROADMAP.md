@@ -263,13 +263,19 @@ GitHub, DigitalOcean, Postgres passwords) before committing - tested the
 exact code locally against the live workflow (all 103 nodes intact, zero
 `.env` secrets left), then ran the real workflow once via a temporary
 trigger (removed after); its commit replaced the bad diagnostic file
-`workflow_exports/main-workflow.json` was holding. The old token is still in
-one past commit (`f632a61`), so it must be rotated: Mark revokes it in
-@BotFather, the new one goes in `.env`, then `fix_rotate_telegram_token.js`
-swaps it everywhere (5 URLs + a fresh `telegramApi` credential used by 8
-nodes across the main bot and Error Watcher, re-activates so Telegram's
-webhook re-registers, deletes the old credential). History isn't rewritten
-- once rotated, the old token is worthless.
+`workflow_exports/main-workflow.json` was holding. **Token rotated (same
+night):** Mark revoked it in @BotFather (note: `/revoke` wants the bot
+picked by button or typed as `@Marizo_assistant_bot` - the display name
+fails), new token into `.env`, then `fix_rotate_telegram_token.js` swapped
+it everywhere: 5 URLs + a fresh `telegramApi` credential for the 8 nodes
+across the main bot and Error Watcher, re-activated (Telegram webhook
+re-registered to bot.marizo.site, 0 pending, no errors), old credential
+deleted. Verified: the leaked token pulled from commit `f632a61` now gets
+401 from Telegram, and the new token is the only one in any workflow.
+History not rewritten - the old token is dead, so it doesn't matter.
+**Next rotation is one command:** update `TELEGRAM_BOT_TOKEN` in `.env`,
+run `node fix_rotate_telegram_token.js` (it finds the credential in use
+itself).
 
 **Sequencing confirmed (2026-11-27), per Mark: git export → Windows app
 install → migrate the old Input Log data in.** That order, once the git
