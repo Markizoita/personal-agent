@@ -506,7 +506,7 @@ async function loadMetrics() { loadPoints(); renderMetrics(await call('dashboard
 /* ---------- points log + rules ---------- */
 let POINTS = null;
 let POINT_DAYS = 7;
-const SOURCES = { auto: 'from your submit', timer: 'timer', import: 'imported', session_log: 'imported', proof: 'first proof of the day', submit: 'your outside work', dashboard: 'logged by you', telegram: 'logged by you' };
+const SOURCES = { auto: 'from your submit', rebuild: 'rebuilt from your records', timer: 'timer', import: 'imported', session_log: 'imported',proof: 'first proof of the day', submit: 'your outside work', dashboard: 'logged by you', telegram: 'logged by you' };
 const xpText = v => (Math.round(Number(v) * 10) / 10).toLocaleString('en-US');
 const worth = r => '+' + xpText(r.xp) + (r.unit === 'per time' ? '' : ' ' + r.unit);
 async function loadPoints() {
