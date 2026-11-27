@@ -67,6 +67,7 @@
   .todo-item input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--done); flex-shrink: 0; }
   .todo-item span.txt { flex: 1; font-size: 15px; }
   .todo-item span.txt.done { text-decoration: line-through; color: var(--muted); }
+  .todo-item .when { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 2px; }
   .todo-item button.del { border: none; background: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px 8px; }
   .inline-form { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
   .inline-form input, .inline-form select { flex: 1; min-width: 100px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 14px; }
@@ -453,10 +454,11 @@ function todoRow(it, opts) {
   opts = opts || {};
   const wrap = document.createElement('div');
   const row = document.createElement('div'); row.className = 'todo-item';
-  const chip = opts.showProject ? it.project : (opts.showDay ? dayLabel(it.day) : '');
+  const when = { now: 'Now', next: 'Next', later: 'Later' }[it.tag] || '';
+  const chip = opts.showProject ? it.project : (opts.showDay ? (dayLabel(it.day) || when) : '');
   row.innerHTML = `<input type="checkbox" aria-label="Done" ${it.done ? 'checked' : ''}>
-    <span class="txt ${it.done ? 'done' : ''}">${esc(it.text)}</span>
-    ${chip ? `<span class="chip">${esc(chip)}</span>` : ''}
+    <span class="txt ${it.done ? 'done' : ''}">${esc(it.text)}${chip && opts.showDay ? `<small class="when">${esc(chip)}</small>` : ''}</span>
+    ${chip && !opts.showDay ? `<span class="chip">${esc(chip)}</span>` : ''}
     ${(opts.showProject || (opts.showDay && it.day !== TODAY)) ? '<button class="mini today">+ Today</button>' : ''}
     <button class="del" aria-label="Delete">✕</button>`;
   const box = row.querySelector('input');

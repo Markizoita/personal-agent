@@ -1,69 +1,30 @@
 # Personal Agent Roadmap
 
-## Current to-do list (updated 2026-11-27)
+## To-do list: it lives in Start Up Ops
 
-Mirrors Mark's "Systems Plan" doc (the source of truth for status). This
-section supersedes any older plan below where they disagree. Mark's rule
-for that doc: check items off when done and keep checked ones at the top.
-Don't build an open item until Mark says to start it.
+Since 2026-11-27 the to-do list is in the web page (Projects tab), which
+replaced the "Systems Plan" doc. See it with `node scripts/todo.js list` and
+keep it current at a general level (see `CLAUDE.md`). Don't build an open
+item until Mark says to start it. `todos_sql.sql` adds the Now / Next /
+Later labels (a to-do tag). This file keeps build notes only.
 
-### Now: Start Up Ops
-- [x] Fix start/stop: one Start/Stop button, no 9:00 time. Stop asks "Done
-  for today?": Submit my day / Just a break / Keep working. (Nothing
-  auto-stops a forgotten timer.)
-- [x] Fix homepage: submit, outside-work step, "new things to do" quick-add,
-  breakdown card. See "How submit works" below.
-- [x] To-dos belong to projects (Projects tab holds each list, optional
-  date, "+ Today", finishing one can attach proof).
-- [x] Blank Home flashed before the data on open: a loading screen now
-  shows until data arrives (with "Try again" when offline), and the open
-  app refreshes quietly when you come back to it. Verified live.
-- [x] Same-day add-on: after submitting, Start again adds to the same day's
-  form; the next submit adds an "add-on" under the original, each part with
-  its own work times (e.g. 9-5, then 7-10). See "How submit works" below.
-- [x] Phone uses the GitHub Pages app (checked 2026-11-27 in n8n request
-  logs: the iPhone has used only the new app since 11:59 AM; last opened
-  the old n8n page 12:50 AM).
-- [x] Deleted the old n8n "Dashboard Page" workflow (Mark's call,
-  2026-11-27; its three webhooks now return 404). `dashboard.html`,
-  `build_dashboard_page.js` and the root `icon.svg` were removed with it:
-  `docs/index.html` is now the only copy of the app.
-- [x] Automatic points: each submit adds the XP for what actually happened,
-  with no approval step, plus a points log and the rules on the Metrics tab.
-  See "How points work" below.
-- [ ] Fix past memory to the new Start Up Ops system (Mark to explain; he
-  asked to wait on starting it).
-  - Mark's instructions (2026-11-27): rebuild startup history Nov 13 to now
-    from every record, ask about anything unclear, and push history changes
-    only after those questions are answered. Startup work only, not personal
-    data; exact times not required.
-  - Done 2026-11-27 (all tables snapshotted first into `startup_backups`):
-    overnight stretch now 12:36-3:00 AM; today's timer replaced by one
-    running stretch from 11:00 AM (source `correction`); both Nov 27 submits
-    removed and the held entries released, so the next submit rebuilds the
-    day's breakdown and points. The Claude hook and `ingest_claude_session`
-    now keep the whole day's notes (they cut to the last 14 before).
-  - Answered (2026-11-27): one real selling item on Nov 25, the Nov 26
-    Telegram pitch entry was fake, nothing else unlogged, no MyFlow or Vibe
-    animation work, don't submit Nov 27 yet. Added empty projects "News
-    agent" and "Automation agency" (Parked).
-  - Pending Mark's confirmation: Nov 25 (shown as Miss, but records show a
-    full day) and Nov 26 hours, after seeing the day breakdown, and the
-    "Shipped" points for Nov 13, 17, 19, 24, 25, 26. Sources: Input Log
-    sheet, Telegram schedule/notes/messages, n8n run history (from Nov 17),
-    Claude Code transcripts on this PC, git log.
-- [ ] LAST (after the memory item): test the 10 PM Breakdown once
-  everything else works.
-
-### Next: personal automations
-- [ ] Finance metrics: fix tap error.
-- [ ] TikTok tracking: no notification after 10 minutes.
-
-### Later
-- [ ] News agent — once personal automations are done.
-- [ ] Pre-narrow idea season system: how to build and manage multiple
-  projects.
-- [ ] Project automations: decide which project to work on.
+### History rebuild (past memory) - in progress
+- Mark's instructions (2026-11-27): rebuild startup history Nov 13 to now
+  from every record, ask about anything unclear, and push history changes
+  only after those questions are answered. Startup work only, not personal
+  data; exact times not required.
+- Done 2026-11-27 (all tables snapshotted first into `startup_backups`):
+  overnight stretch now 12:36-3:00 AM; today's timer replaced by one running
+  stretch from 11:00 AM (source `correction`); both Nov 27 submits removed
+  and the held entries released, so the next submit rebuilds the day's
+  breakdown and points. The Claude hook and `ingest_claude_session` now keep
+  the whole day's notes (they cut to the last 14 before).
+- Answered: one real selling item on Nov 25, the Nov 26 Telegram pitch entry
+  was fake, nothing else unlogged, no MyFlow or Vibe animation work, don't
+  submit Nov 27 yet. The "Shipped" list for Nov 13, 17, 19, 24, 25, 26 is
+  confirmed right.
+- Pending Mark: the Nov 25 and 26 hours (Telegram-confirmed times alone, or
+  plus the later computer time). Nothing in past days is changed until then.
 
 ### How submit works (built 2026-11-27)
 - `homepage_sql.sql` (applied; safe to re-run): `startup_todos.day` null =
