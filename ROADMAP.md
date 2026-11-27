@@ -15,7 +15,12 @@ Don't build an open item until Mark says to start it.
   breakdown card. See "How submit works" below.
 - [x] To-dos belong to projects (Projects tab holds each list, optional
   date, "+ Today", finishing one can attach proof).
-- [ ] Fix past memory to the new Start Up Ops system (Mark to explain).
+- [ ] Fix past memory to the new Start Up Ops system (Mark to explain; he
+  asked to wait on starting it).
+  - Overnight timer, Nov 26-27: `startup_sessions` id 19 counted 12:36 AM
+    to 10:32 AM (~9.9h). His chat messages stopped ~2:52 AM, so the real
+    stop was likely ~3 AM. Hours and the matching `hour_worked` XP row need
+    correcting; part of this item, don't change it before he explains.
 - [ ] Old UI shows first when the app opens, then the new UI replaces it.
   (Clue found while deploying: GitHub Pages caches the page for ~10 min.)
 - [ ] Phone: re-add the Home Screen shortcut from the GitHub Pages URL.
