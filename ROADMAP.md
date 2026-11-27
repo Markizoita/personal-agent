@@ -130,10 +130,34 @@ each just Webhook → call the matching `dashboard_*` function (via the same
 `supabaseApi` credential as everything else) → respond with its JSON
 as-is. All 11 tested live end-to-end against the real public webhooks
 (`https://bot.marizo.site/webhook/dashboard-*`), test data cleaned up
-after. **What's still missing: the actual visual frontend** (login form,
-Start/Stop buttons, to-do list, etc.) - this built the API only, nothing
-for Mark to click yet. Needs its own pass, location (this session vs. the
-dashboard session) not yet decided.
+after. Two more read-only wrappers added since (`dashboard_get_home`,
+`dashboard_get_progress`, in `dashboard_reads_sql.sql`) so the frontend
+reads through the same one session token as everything else, rather than
+mixing in the old static `GAME_API_TOKEN` used by `Game State API`.
+
+**Dashboard frontend — done and live (2026-11-27).** Single page
+(`dashboard.html`, served by a new `Dashboard Page` n8n workflow at
+`https://bot.marizo.site/webhook/dashboard`, `build_dashboard_page.js`),
+built per Mark's call: no game/mountain visual, plain metrics instead
+(level, XP, streak, the 4 powers as bars, titles as badges, 5 metric cards
+with week/month/all-time toggle and 7-day sparklines), plus the real
+Home actions he asked to keep - Start/Stop, to-do list (add/check/delete),
+proof log, a task-logging form (the "did `<task>`" equivalent for the
+dashboard), and "Finish today" (the Submit action, with a confirm prompt).
+Color palette carried over from the game doc, mountain-specific styling
+dropped. Login password is in `.env` as `DASHBOARD_PASSWORD` (never in a
+committed file) - change it there, then run `node set_dashboard_password.js`.
+Caught and fixed two real bugs while testing live in a real browser: a bad
+escaped quote that broke the whole page's JS, and an unguarded
+`localStorage` call that (in some environments) throws and poisons a
+`let` variable's initialization - fixed with a small try/catch wrapper,
+which is good defensive practice regardless of what triggered it.
+Verified end-to-end: login, real metrics rendering, and a live Start/Stop
+toggle through the actual UI (not just the API) - test data cleaned up
+after. **Not done yet:** installing it as a Windows app (PWA install) -
+the page is served and has a manifest stub, but actually walking through
+the install flow hasn't happened; a real icon for the manifest/install
+prompt is also still a placeholder (empty icons array).
 
 **Nightly backups - more detail, per Mark's request (2026-11-26). Server
 snapshot done (above); workflow-export-to-git and database backups still
