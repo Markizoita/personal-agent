@@ -16,4 +16,28 @@ begin
 end;
 $$;
 
+create or replace function dashboard_get_projects(p_token text)
+returns jsonb language plpgsql as $$
+begin
+  if not dashboard_session_valid(p_token) then return jsonb_build_object('ok', false, 'reason', 'invalid session'); end if;
+  return jsonb_build_object('ok', true, 'projects', get_dashboard_projects());
+end;
+$$;
+
+create or replace function dashboard_get_history(p_token text, p_days text default '30')
+returns jsonb language plpgsql as $$
+begin
+  if not dashboard_session_valid(p_token) then return jsonb_build_object('ok', false, 'reason', 'invalid session'); end if;
+  return jsonb_build_object('ok', true) || get_dashboard_history(p_days);
+end;
+$$;
+
+create or replace function dashboard_get_day(p_token text, p_date text default null)
+returns jsonb language plpgsql as $$
+begin
+  if not dashboard_session_valid(p_token) then return jsonb_build_object('ok', false, 'reason', 'invalid session'); end if;
+  return jsonb_build_object('ok', true) || get_dashboard_day(p_date);
+end;
+$$;
+
 grant execute on all functions in schema public to service_role;

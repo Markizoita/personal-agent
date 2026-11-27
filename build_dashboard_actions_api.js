@@ -86,7 +86,13 @@ const ENDPOINTS = [
   { path: 'dashboard-home', rpc: 'dashboard_get_home',
     body: "={{ JSON.stringify({ p_token: $json.body.token }) }}" },
   { path: 'dashboard-progress', rpc: 'dashboard_get_progress',
-    body: "={{ JSON.stringify({ p_token: $json.body.token, p_period: $json.body.period || 'week' }) }}" }
+    body: "={{ JSON.stringify({ p_token: $json.body.token, p_period: $json.body.period || 'week' }) }}" },
+  { path: 'dashboard-projects', rpc: 'dashboard_get_projects',
+    body: "={{ JSON.stringify({ p_token: $json.body.token }) }}" },
+  { path: 'dashboard-history', rpc: 'dashboard_get_history',
+    body: "={{ JSON.stringify({ p_token: $json.body.token, p_days: $json.body.days || '30' }) }}" },
+  { path: 'dashboard-day', rpc: 'dashboard_get_day',
+    body: "={{ JSON.stringify({ p_token: $json.body.token, p_date: $json.body.date || null }) }}" }
 ];
 
 const nodes = [];

@@ -159,6 +159,26 @@ the page is served and has a manifest stub, but actually walking through
 the install flow hasn't happened; a real icon for the manifest/install
 prompt is also still a placeholder (empty icons array).
 
+**Rebuilt as real 5 tabs — done (2026-11-27), per a design Mark had been
+building in a separate Claude.ai chat canvas the whole time** (never
+synced here until he surfaced it - a real design artifact, `Main.dc.html`,
+with Home/Progress/Projects/History/News as genuinely separate tabs, found
+via `Artifact(action: "read")` on the link he gave). Rebuilt `dashboard.html`
+to match: real tab navigation (not one merged page), "Progress" renamed to
+**Metrics** per Mark, **News** kept as the same placeholder tab for the
+later news agent. The mockup's rank system (flat XP thresholds: Builder at
+500, Shipper at 1500, etc.) was the OLDER, pre-powers design - rewired to
+the REAL live system instead (titles with real earned/progress data, the
+4 powers, level from `game_total_xp`). Added 3 more backend pieces this
+needed: `dashboard_get_projects`/`dashboard_get_history`/`dashboard_get_day`
+wrappers (`dashboard_reads_sql.sql`) and matching webhooks (`dashboard-projects`,
+`dashboard-history`, `dashboard-day`), now 14 endpoints total. One thing
+dropped on purpose: the mockup's "Waiting on you" project notifications -
+no real backend data source for that (would need a notifications/updates
+table never built), so it's left out rather than faked. Checked the new
+JS for syntax errors with `node --check` before deploying this time, then
+re-verified live in a real browser across all 5 tabs - clean.
+
 **Nightly backups - more detail, per Mark's request (2026-11-26). Server
 snapshot done (above); workflow-export-to-git and database backups still
 deferred:**
