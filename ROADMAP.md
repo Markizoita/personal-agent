@@ -54,6 +54,11 @@ Don't build an open item until Mark says to start it.
   end-of-turn summaries, changed file names and active minutes (never user
   messages), redacted, to `claude-session` with `CLAUDE_HOOK_SECRET`.
 - `startup_submit_day`/hook tables are server-only (anon revoked).
+- Mark's first real submit worked (Nov 27). It listed an already-solved
+  problem as open, picked from an early session note; fixed the same day:
+  session notes and commits are now timestamped, and "Still open" may only
+  come from unfinished to-dos and the latest note. Re-tested on a copy of
+  that day.
 - Tested: SQL suite in a rolled-back transaction; UI flows on a local mock;
   two real submits (a throwaway date, and Nov 26 which was then restored).
   The session hook was seen firing on its own.

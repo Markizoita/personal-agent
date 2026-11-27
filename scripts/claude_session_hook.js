@@ -21,6 +21,7 @@ function readEnv() {
 }
 
 const etDay = t => new Date(t).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+const etClock = t => new Date(t).toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: false });
 
 function redact(text, env) {
   let out = String(text);
@@ -62,10 +63,10 @@ function summarize(transcript, today) {
     if (o.type !== 'assistant' || o.isSidechain || !o.message || !Array.isArray(o.message.content)) continue;
     for (const b of o.message.content) {
       if (b.type === 'tool_use') {
-        if (/wrap_up$/.test(b.name) && b.input && b.input.recap) recaps.push(b.input.recap);
+        if (/wrap_up$/.test(b.name) && b.input && b.input.recap) recaps.push(etClock(o.timestamp) + ' ' + b.input.recap);
         if (/^(Edit|Write|NotebookEdit)$/.test(b.name) && b.input && b.input.file_path) files.push(b.input.file_path);
       } else if (b.type === 'text' && o.message.stop_reason === 'end_turn' && b.text.trim()) {
-        replies.push(b.text.trim().replace(/\s+/g, ' ').slice(0, 220));
+        replies.push(etClock(o.timestamp) + ' ' + b.text.trim().replace(/\s+/g, ' ').slice(0, 220));
       }
     }
   }
