@@ -88,11 +88,25 @@ role key stops sitting as plaintext in every node's headers (Supabase
 requires BOTH an `apikey` and an `Authorization` header with the same
 secret - n8n's generic single-header credential can't hide both at once,
 but this native predefined-credential-type can, verified by testing).
-Canary-tested on one node (`Check Due Pings`); rolling out to the other
-~51 nodes that still hardcode it once the canary's confirmed live. The
-Telegram bot token still sits in the URL for `sendRichMessage` calls -
-Telegram's Bot API requires the token in the URL path, not a header, so
-there's no clean way to credential-ize that one away with current tools.
+**Done and verified (2026-11-27):** all 51 remaining nodes switched over,
+confirmed the live workflow export no longer contains the key anywhere
+(checked the raw JSON directly), and confirmed two real post-push
+executions ran clean with no auth errors (`Check Due Pings`,
+`Check TikTok Elapsed`). Didn't get a live example of an `httpRequestTool`
+(AI Agent tool) node specifically, since no real Telegram message landed
+in that window - but it shares the exact same request/credential-resolution
+code as the plain `httpRequest` nodes that did verify clean, so this is
+considered done. The Telegram bot token still sits in the URL for
+`sendRichMessage` calls - Telegram's Bot API requires the token in the URL
+path, not a header, so there's no clean way to credential-ize that one away
+with current tools.
+
+**Sequencing decision (2026-11-27, per Mark): DigitalOcean server
+snapshot next, then back to Start Up Ops's remaining dashboard work**
+(login + action tabs, built in the other cloud session). Enabling DO's
+backup toggle needs either Mark doing it himself in DO's dashboard, or a
+DigitalOcean API token if he wants this session to handle it directly -
+not yet decided which.
 
 **Nightly backups - more detail, per Mark's request (2026-11-26), still
 deferred:**
