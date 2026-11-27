@@ -25,6 +25,26 @@ function api(method, url, body) {
   return json;
 }
 
+// The repo is public: any secret hardcoded in a node (e.g. the Telegram token in sendMessage URLs) must be blanked before commit.
+const ENCODE_CODE = String.raw`const rules = [
+  [/\d{8,10}:AA[A-Za-z0-9_-]{30,}/g, '<TELEGRAM_BOT_TOKEN>'],
+  [/sk-ant-[A-Za-z0-9_-]{20,}/g, '<ANTHROPIC_KEY>'],
+  [/sb_secret_[A-Za-z0-9_-]{10,}/g, '<SUPABASE_SECRET>'],
+  [/eyJ[A-Za-z0-9_-]{15,}\.eyJ[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{10,}/g, '<JWT>'],
+  [/(?:github_pat_|ghp_)[A-Za-z0-9_]{20,}/g, '<GITHUB_TOKEN>'],
+  [/dop_v1_[a-f0-9]{40,}/g, '<DO_TOKEN>'],
+  [/(postgres(?:ql)?:\/\/[^:\s"]+:)[^@\s"]+@/g, '$1<PASSWORD>@'],
+];
+let text = JSON.stringify($json, null, 2);
+let redacted = 0;
+for (const [re, rep] of rules) text = text.replace(re, (...m) => { redacted++; return rep.replace('$1', m[1]); });
+const b64 = Buffer.from(text, 'utf8').toString('base64');
+const now = new Date().toISOString().slice(0, 10);
+return [{ json: { content: b64, message: 'Nightly workflow export ' + now + ' (' + redacted + ' secrets redacted)' } }];`;
+
+module.exports = { ENCODE_CODE };
+if (require.main !== module) return;
+
 const main = api('GET', `/workflows/${MAIN_ID}`);
 
 const wf = {
@@ -37,13 +57,7 @@ const wf = {
         authentication: 'predefinedCredentialType', nodeCredentialType: 'httpHeaderAuth', options: {} },
       credentials: { httpHeaderAuth: N8N_CRED } },
     { id: 'we03', name: 'Encode Export', type: 'n8n-nodes-base.code', typeVersion: 2, position: [440, 0],
-      parameters: { jsCode:
-        "const wf = $json;\n" +
-        "const text = JSON.stringify(wf, null, 2);\n" +
-        "const b64 = Buffer.from(text, 'utf8').toString('base64');\n" +
-        "const now = new Date().toISOString().slice(0, 10);\n" +
-        "return [{ json: { content: b64, message: 'Nightly workflow export ' + now } }];"
-      } },
+      parameters: { jsCode: ENCODE_CODE } },
     { id: 'we04', name: 'Get Existing SHA', type: 'n8n-nodes-base.httpRequest', typeVersion: 4.2, position: [660, 0],
       continueOnFail: true,
       parameters: { method: 'GET', url: `https://api.github.com/repos/${OWNER}/${REPO}/contents/${REPO_PATH}`,

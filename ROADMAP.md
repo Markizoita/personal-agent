@@ -235,6 +235,42 @@ still call the exact same n8n webhook APIs for all data (CORS already
 allows `*`) - only the page's own hosting moves, nothing backend-side
 changes. Needs Mark's go-ahead before doing that migration.
 
+**Dashboard moved to GitHub Pages — done and verified (2026-11-27).** Mark
+said go. Repo made public (required for free-tier Pages; safe because no
+secrets are committed - but see the token incident below, which this
+surfaced). Static copy lives in `docs/` (`index.html`, `manifest.json`,
+`icon.svg`), served at https://markizoita.github.io/personal-agent/ and
+still calling the same n8n webhooks for all data. Enabled Pages by hand in
+GitHub settings (the fine-grained PAT has no Pages permission - API gave
+403). Verified in a real browser: `window.origin` is now the real
+`https://markizoita.github.io` (was `"null"`), secure context, `localStorage`
+works (login token survives reloads), manifest + icon load (200,
+`display: standalone`), all 5 tabs render real data, zero console errors.
+**Keep in sync:** `docs/index.html` is a copy of `dashboard.html` with
+relative manifest/icon links - edit `dashboard.html`, then re-copy. The old
+n8n-hosted `/webhook/dashboard` page still works but can't be installed.
+
+**Real incident, found and contained (2026-11-27): Telegram bot token
+leaked into the public repo.** Found by a full git-history secret scan run
+right after the repo went public. Cause: the main workflow hardcodes the
+bot token in 5 HTTP nodes' URLs (`api.telegram.org/bot<token>/...` - the
+Telegram API puts it in the path, so the header-based credential cleanup
+from earlier never covered these), and the nightly export commits that
+JSON verbatim. Checked first: the bot's webhook still points at our server
+with no errors - no sign of misuse. Fixed the leak path: the export's Code
+node now redacts secret patterns (Telegram, Anthropic, Supabase, JWT,
+GitHub, DigitalOcean, Postgres passwords) before committing - tested the
+exact code locally against the live workflow (all 103 nodes intact, zero
+`.env` secrets left), then ran the real workflow once via a temporary
+trigger (removed after); its commit replaced the bad diagnostic file
+`workflow_exports/main-workflow.json` was holding. The old token is still in
+one past commit (`f632a61`), so it must be rotated: Mark revokes it in
+@BotFather, the new one goes in `.env`, then `fix_rotate_telegram_token.js`
+swaps it everywhere (5 URLs + a fresh `telegramApi` credential used by 8
+nodes across the main bot and Error Watcher, re-activates so Telegram's
+webhook re-registers, deletes the old credential). History isn't rewritten
+- once rotated, the old token is worthless.
+
 **Sequencing confirmed (2026-11-27), per Mark: git export → Windows app
 install → migrate the old Input Log data in.** That order, once the git
 token's in hand.
