@@ -52,6 +52,38 @@ no tool call, no interaction, nothing to type. The underlying Supabase
 tables/functions are untouched - the dashboard (once its login + action
 tabs are done) is the only thing that writes to them going forward.
 
+**Weekly + monthly Start Up Ops recap — done (2026-11-26).** Same pattern
+and same triggers as the existing Finance weekly/monthly recap (Sunday /
+last day of month, off the 10 PM Breakdown's own schedule trigger) - reads
+`get_dashboard_progress('week'/'month')`, which already had everything
+needed. Fully deterministic, no agent involved, verified against real data.
+
+**Dashboard login + Start/Stop/Submit UX — spec written, not built.** See
+`DASHBOARD_ACTIONS_PLAYBOOK.md` for the full writeup (login approach, and
+the Stop-vs-Submit split Mark specifically asked for, to support stopping
+and restarting the timer more than once in the same day). For whoever
+builds the dashboard session's action tabs next.
+
+**Cleanup — done (2026-11-26).** Dropped the old paused Start Up columns
+(`start_build_hours`, `start_plan_hours`, `start_proof`) from `daily_log`
+entirely - updated `get_daily_form`/`upsert_daily_log` to match, removed the
+dead prompt instruction that referenced them. Fully superseded by the new
+system, nothing left behind.
+
+**Still open / not rotated: the Supabase database password.** It was pasted
+in the cloud session's chat; confirmed (2026-11-26) the OLD password still
+works, so it hasn't been changed yet. Mark needs to reset it himself in
+Supabase (Project Settings → Database), then tell this session the new one
+so `.env` can be updated - nothing else depends on the old value being kept.
+
+**Deferred, explained but not started:**
+- Nightly automated backups (n8n workflow export to git, Supabase database
+  backups, DigitalOcean server snapshots) - all three were in the original
+  spec, none exist yet. Explained to Mark 2026-11-26; he said wait on it,
+  wants it explained again if revisited later.
+- Migrating the old Input Log spreadsheet data in - mentioned in the
+  original docs as "a later task," still untouched.
+
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,
    on-time/late/miss cutoff at 7:30, streak tracking, `/wake`, `/skip`,
