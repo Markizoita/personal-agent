@@ -32,6 +32,8 @@ create table if not exists startup_scored (
   primary key (ref, hash)
 );
 alter table startup_scored enable row level security;
+-- Set when an entry is parked rather than checked (its kind, project and text, kept for scoring later).
+alter table startup_scored add column if not exists held jsonb;
 
 create or replace function startup_name_key(p text) returns text language sql immutable as $$
   select lower(regexp_replace(coalesce(p, ''), '[^a-zA-Z0-9]', '', 'g'))

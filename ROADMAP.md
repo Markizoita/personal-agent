@@ -39,9 +39,15 @@ Don't build an open item until Mark says to start it.
     correcting; part of this item, don't change it before he explains.
   - Nov 27 points: the 1:56 PM and 2:36 PM submits came before automatic
     points went live, so that work has none yet. Mark's call (2026-11-27):
-    don't add them now; fix them as part of this item. Note that another
-    submit of Nov 27 on that same day would check those entries
-    automatically (unchecked then: 1 to-do, 1 proof, 14 session notes).
+    don't add them now; fix them as part of this item, and hold them until
+    then. Held: 14 entries from before 2:36 PM (1 to-do, 1 proof, 12
+    session notes) as `startup_scored` rows with `held` set (their text is
+    kept there). To score them: read that text, then delete those rows
+    (`log_date = '2026-11-27' and held is not null`). Notes no longer in
+    `claude_sessions` need scoring from the `held` text itself.
+  - Found while holding: `scripts/claude_session_hook.js` keeps only the
+    last 14 recaps (and 4,000 characters) per session, so on a long day the
+    earliest work drops out of the breakdown and points. Not changed yet.
   - Next from Mark: instructions on what to do for memory/data.
 - [ ] LAST (after the memory item): test the 10 PM Breakdown once
   everything else works.
