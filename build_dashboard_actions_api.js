@@ -82,7 +82,11 @@ const ENDPOINTS = [
   { path: 'dashboard-undo-task', rpc: 'dashboard_undo_task',
     body: "={{ JSON.stringify({ p_token: $json.body.token, p_id: String($json.body.id) }) }}" },
   { path: 'dashboard-set-project', rpc: 'dashboard_set_project',
-    body: "={{ JSON.stringify({ p_token: $json.body.token, p_name: $json.body.name, p_status: $json.body.status || 'Building' }) }}" }
+    body: "={{ JSON.stringify({ p_token: $json.body.token, p_name: $json.body.name, p_status: $json.body.status || 'Building' }) }}" },
+  { path: 'dashboard-home', rpc: 'dashboard_get_home',
+    body: "={{ JSON.stringify({ p_token: $json.body.token }) }}" },
+  { path: 'dashboard-progress', rpc: 'dashboard_get_progress',
+    body: "={{ JSON.stringify({ p_token: $json.body.token, p_period: $json.body.period || 'week' }) }}" }
 ];
 
 const nodes = [];
