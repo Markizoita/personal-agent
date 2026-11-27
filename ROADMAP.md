@@ -109,9 +109,31 @@ endpoint directly (next window 2026-11-29). Corrected course mid-task: the
 "Start Up Ops dashboard lives in the other session, not here" claim from
 earlier was wrong - its backend is just more n8n workflows (e.g.
 `Game State API`, a token-gated webhook), same tools this session already
-uses. Next up per Mark: build the dashboard's login + action-tab endpoints
-(start/stop, to-dos, proof, game-task logging) here, continuing from the
-pushed `game_sql.sql`/`dashboard_sql.sql`/`build_game_api.js` pattern.
+uses.
+
+**Dashboard login + action-tab endpoints — done, backend only (2026-11-27).**
+Built here, continuing from the pushed `game_sql.sql`/`dashboard_sql.sql`
+pattern. SQL (`dashboard_login_sql.sql`): `dashboard_settings` (password,
+set via `set_dashboard_password.js` reading `DASHBOARD_PASSWORD` from
+`.env` - never committed) and `dashboard_sessions` (random token, 30-day
+expiry), plus thin `dashboard_*` wrapper functions around every already-
+proven action function (`dashboard_start`, `dashboard_stop`,
+`dashboard_submit_day` - the separate Stop-vs-Submit split from the
+playbook, `dashboard_add_todo`, `dashboard_todo_done`,
+`dashboard_todo_delete`, `dashboard_log_proof`, `dashboard_log_task`,
+`dashboard_undo_task`, `dashboard_set_project`) that check the session
+token first and refuse with `{"ok":false,"reason":"invalid session"}` if
+it's missing/expired - reused logic, no new business rules.
+n8n: a new, separate `Dashboard Actions API` workflow (33 nodes,
+`build_dashboard_actions_api.js`), 11 webhooks total (login + 10 actions),
+each just Webhook → call the matching `dashboard_*` function (via the same
+`supabaseApi` credential as everything else) → respond with its JSON
+as-is. All 11 tested live end-to-end against the real public webhooks
+(`https://bot.marizo.site/webhook/dashboard-*`), test data cleaned up
+after. **What's still missing: the actual visual frontend** (login form,
+Start/Stop buttons, to-do list, etc.) - this built the API only, nothing
+for Mark to click yet. Needs its own pass, location (this session vs. the
+dashboard session) not yet decided.
 
 **Nightly backups - more detail, per Mark's request (2026-11-26). Server
 snapshot done (above); workflow-export-to-git and database backups still
