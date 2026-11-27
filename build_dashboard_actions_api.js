@@ -143,6 +143,7 @@ const system = [
   "The same work often shows up in a session summary, a commit and a proof note: mention it once, in plain words, without commit hashes or file names.",
   "Session notes and commits are a running record, oldest first, with times. A problem or unfinished item in an earlier note is often handled later the same day, so describe the state at the end of the day.",
   "Still open may only contain unfinished to-dos (todos_not_done) and things the last session note says are still unfinished. Never take an open problem from an earlier note. If unsure whether something was handled, leave it out.",
+  "If the data has 'addon', this is an add-on to a day Mark already submitted: write only about the new work in this data, start with one sentence on that extra work, do not repeat anything already in earlier_breakdowns, and keep it under 100 words. whole_day_timer_hours covers the whole day, not just this add-on; the add-on's own time is in timer_sessions. If there is almost nothing new, say so in one sentence.",
   "Plain text only (no markdown headings or bold), under 180 words, in this shape:",
   "One or two sentences on how the day went (hours, result).",
   "Done:\\n- ...",
@@ -209,7 +210,7 @@ const submitNodes = [
     `={{ JSON.stringify({ p_token: $('Webhook: dashboard-submit').first().json.body.token, p_date: ${GATHER}.date, p_text: $json.text }) }}`),
   { id: 'dbsub10', name: 'Respond: dashboard-submit', type: 'n8n-nodes-base.respondToWebhook', typeVersion: 1.1, position: [1980, sy],
     parameters: { respondWith: 'json', options: { responseHeaders: cors },
-      responseBody: `={{ JSON.stringify({ ok: true, date: ${GATHER}.date, label: ${GATHER}.label, result: ${GATHER}.result, breakdown: $('Submit: read answer').first().json.text, problem: $('Submit: read answer').first().json.problem, commits: $('Submit: build prompt').first().json.commit_count, model: $('Submit: read answer').first().json.model, usage: $('Submit: read answer').first().json.usage }) }}` } }
+      responseBody: `={{ JSON.stringify({ ok: true, date: ${GATHER}.date, label: ${GATHER}.label, result: ${GATHER}.result, part: ${GATHER}.part, breakdown: $('Submit: read answer').first().json.text, problem: $('Submit: read answer').first().json.problem, commits: $('Submit: build prompt').first().json.commit_count, model: $('Submit: read answer').first().json.model, usage: $('Submit: read answer').first().json.usage }) }}` } }
 ];
 nodes.push(...submitNodes);
 const chain = ['Webhook: dashboard-submit', 'Submit: record and gather', 'Submit: ok?'];

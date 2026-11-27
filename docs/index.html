@@ -117,7 +117,10 @@
   .proof-prompt input { flex: 1 1 180px; }
   details.more { margin-top: 12px; }
   details.more summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); padding: 4px 0; }
-  .breakdown { white-space: pre-wrap; font-size: 14px; line-height: 1.55; margin-top: 8px; }
+  .breakdown { white-space: pre-wrap; font-size: 14px; line-height: 1.55; margin-top: 6px; }
+  .part { margin-top: 10px; }
+  .part + .part { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  .part-head { font-size: 12px; font-weight: 600; color: var(--muted); }
   .overlay { position: fixed; inset: 0; background: #0008; display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
   .modal { background: var(--card); color: var(--ink); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; border-radius: 18px 18px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px)); }
   .modal h2 { font-size: 20px; margin-bottom: 6px; }
@@ -178,7 +181,7 @@
       </div>
       <div class="card" id="breakdownCard" style="display:none">
         <div class="row"><div class="section-title" style="margin:0" id="bdTitle"></div><span id="bdResult"></span></div>
-        <div class="breakdown" id="bdText"></div>
+        <div id="bdParts"></div>
       </div>
       <div class="card">
         <div class="section-title" style="margin-top:0">To-dos today</div>
@@ -296,6 +299,15 @@ let TODAY = '';
 let MINUTES_TODAY = 0;
 let PREVIEW = null;
 let SUBMITTING = false;
+let SUBMITTED = false;
+// A day's form: the first submission, then each add-on, with the timer stretches it covers.
+function partsHtml(parts) {
+  return (parts || []).map((p, i) => {
+    const times = (p.worked && p.worked.length) ? `worked ${p.worked.map(esc).join(', ')} (${esc(p.hours)}h)` : 'no timer time';
+    return `<div class="part"><div class="part-head">${i === 0 ? 'Submitted' : 'Add-on'} ${esc(p.submitted || '')} · ${times}</div>
+      <div class="breakdown">${esc(p.text || 'Not written yet. Submit again to retry.')}</div></div>`;
+  }).join('');
+}
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function addDays(iso, n) { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
@@ -375,14 +387,15 @@ async function loadHome() {
   const sub = h.submit || {};
   const link = $('submitLink');
   link.style.display = TIMER_OPEN ? 'none' : 'block';
-  link.textContent = sub.done ? `${sub.label} submitted · submit again` : `Done for today? Submit ${sub.label || ''}`;
+  SUBMITTED = !!sub.done;
+  link.textContent = sub.done ? `${sub.label} submitted · add more` : `Done for today? Submit ${sub.label || ''}`;
 
   const bd = h.last_breakdown;
   $('breakdownCard').style.display = bd ? 'block' : 'none';
   if (bd) {
-    $('bdTitle').textContent = `Breakdown · ${bd.label}`;
+    $('bdTitle').textContent = `Breakdown · ${bd.label} · ${bd.hours}h`;
     $('bdResult').innerHTML = resultPill(bd.result);
-    $('bdText').textContent = bd.text || 'No breakdown was written. Use "submit again" to retry.';
+    $('bdParts').innerHTML = partsHtml(bd.parts);
   }
 
   const box = $('todoBox'); box.innerHTML = '';
@@ -582,7 +595,7 @@ async function selectHistDay(date) {
     ${(p.todos || []).map(t => `<div class="row" style="font-size:14px;padding:4px 0"><span>${esc(t.text)}</span><span style="font-size:12px;font-weight:600;color:${t.done ? 'var(--done)' : 'var(--accent)'}">${t.done ? 'Done' : 'Not done'}</span></div>`).join('')}
     </div>`).join('');
   box.innerHTML = `<div class="row"><h2 style="font-size:18px">${esc(d.label)}</h2><span class="muted">${d.started_at ? 'Started ' + esc(d.started_at) + ' · ' : ''}${esc(d.hours)}h · ${esc(d.result || '')}</span></div>
-    ${d.breakdown ? `<div class="breakdown" style="border-bottom:1px solid var(--line);padding-bottom:12px">${esc(d.breakdown)}</div>` : ''}
+    ${(d.parts && d.parts.length) ? `<div style="border-bottom:1px solid var(--line);padding-bottom:12px">${partsHtml(d.parts)}</div>` : ''}
     ${projRows || '<div class="muted">No project activity.</div>'}
     <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;font-size:14px"><span class="muted">Proof </span>${(d.proof && d.proof.length) ? d.proof.map(esc).join(', ') : 'none'}</div>`;
 }
@@ -600,7 +613,7 @@ async function onTimerButton() {
     return;
   }
   showModal(`<h2>Done for today?</h2>
-    <p class="muted">Submitting saves your day and Claude writes the breakdown.</p>
+    <p class="muted">${SUBMITTED ? "You've already submitted this day. Submitting adds your new work to it." : 'Submitting saves your day and Claude writes the breakdown.'}</p>
     <button class="btn" id="mSubmit">Submit my day</button>
     <button class="btn secondary" id="mBreak">Just a break</button>
     <button class="linkbtn" id="mKeep">Keep working</button>`);
@@ -619,13 +632,17 @@ async function openSubmit() {
   if (!p.ok) { toast('Could not open submit'); return; }
   PREVIEW = p;
   const proof = (p.proof || []).length;
-  showModal(`<h2>Submit ${esc(p.label)}</h2>
+  const again = !!p.submitted_at;
+  showModal(`<h2>${again ? 'Add to' : 'Submit'} ${esc(p.label)}</h2>
     <p class="muted">${esc(p.hours)}h on the timer · ${esc(p.todos_done)} to-do${p.todos_done === 1 ? '' : 's'} done, ${esc(p.todos_open)} not done · ${proof} proof ${proof === 1 ? 'note' : 'notes'}${p.sessions_seen ? ` · ${esc(p.sessions_seen)} Claude ${p.sessions_seen === 1 ? 'session' : 'sessions'}` : ''}</p>
+    ${again ? `<div class="next-hint">${p.has_new
+      ? `You submitted at ${esc(p.submitted_at)}. This adds an add-on under it with your new work.`
+      : `Nothing new since ${esc(p.submitted_at)}, so submitting rewrites that part. Add something below to make an add-on.`}</div>` : ''}
     <div class="section-title">Anything done outside Claude?</div>
     <div class="muted">Pitches, meetings, claude.ai chats. Add proof if you have it.</div>
     <div id="outsideRows"></div>
     <button class="mini" id="addRow" style="margin-top:10px">+ Add something</button>
-    <button class="btn" id="doSubmit" style="margin-top:16px">Submit day</button>
+    <button class="btn" id="doSubmit" style="margin-top:16px">${again ? 'Submit' : 'Submit day'}</button>
     <button class="linkbtn" id="mCancel">Not yet</button>`);
   $('addRow').onclick = () => addOutsideRow();
   $('mCancel').onclick = closeModal;
@@ -665,7 +682,8 @@ async function submitDay(outside) {
   SUBMITTING = false;
   if (!TOKEN) return;
   const failed = !res.ok || !res.breakdown;
-  showModal(`<div class="row"><h2>${res.ok ? esc(res.label) + ' submitted' : 'Submit did not finish'}</h2>${res.ok ? resultPill(res.result) : ''}</div>
+  const title = res.part > 1 ? `Add-on saved to ${esc(res.label)}` : `${esc(res.label)} submitted`;
+  showModal(`<div class="row"><h2>${res.ok ? title : 'Submit did not finish'}</h2>${res.ok ? resultPill(res.result) : ''}</div>
     <div class="breakdown">${esc(res.breakdown || (res.ok ? 'Your day is saved, but the breakdown was not written. ' + (res.problem || '') : 'Nothing was lost. Check your connection and try again.'))}</div>
     ${failed ? '<button class="btn" id="retrySubmit" style="margin-top:16px">Try again</button>' : ''}
     <button class="btn ${failed ? 'secondary' : ''}" id="mDone" style="margin-top:12px">Close</button>`);
