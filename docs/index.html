@@ -525,7 +525,7 @@ function renderPoints() {
   });
   $('pointsLog').innerHTML = days.slice(0, POINT_DAYS).map(d => `<div class="pt-day"><span>${esc(d.label)}</span><span>+${xpText(d.total)}</span></div>` +
     d.rows.map(e => {
-      const times = e.source !== 'timer' && Number(e.quantity) > 1 ? (e.task === 'Money earned' ? ` $${xpText(e.quantity)}` : ` ×${xpText(e.quantity)}`) : '';
+      const times = e.task !== 'Hour worked' && Number(e.quantity) > 1 ? (e.task === 'Money earned' ? ` $${xpText(e.quantity)}` : ` ×${xpText(e.quantity)}`) : '';
       const hours = e.task === 'Hour worked' ? ` ${xpText(e.quantity)}h` : '';
       const detail = [e.note, e.project].filter(Boolean).map(esc).join(' · ');
       return `<div class="pt-row ${e.removed ? 'removed' : ''}"><div class="what"><span>${esc(e.task)}${times}${hours}</span>
