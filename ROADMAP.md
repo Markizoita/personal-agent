@@ -51,6 +51,14 @@ Don't build an open item until Mark says to start it.
 - `startup_submit_day`/hook tables are server-only (anon revoked).
 - Tested: SQL suite in a rolled-back transaction; UI flows on a local mock;
   two real submits (a throwaway date, and Nov 26 which was then restored).
+  The session hook was seen firing on its own.
+
+**Database locked to the server (2026-11-27, `security_lockdown.sql`).**
+Row security on every public table; `anon`/`authenticated` have no table,
+sequence or function access; new objects start locked. n8n (service role)
+and `run_sql.js` are unaffected. Verified: public key gets 401, app
+screens load, the bot's next scheduled run succeeded. The old "Daily Log"
+claude.ai page, which read the database directly, no longer works.
 
 ---
 

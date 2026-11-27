@@ -92,6 +92,13 @@ discovered reactively during live testing.
     anything public, scan the full git history, not just the latest
     files.
 
+13. **New Supabase tables and functions are open to the public key unless
+    locked.** Raw-SQL tables get no row security and every function is
+    executable by `anon` by default. `security_lockdown.sql` (applied
+    2026-11-27) locks the whole public schema to the server role and makes
+    new objects start locked. Still turn on row security for each new
+    table, and keep every client going through n8n, never the public key.
+
 ## Before building the next category
 
 Check each of the above against what's being added:
