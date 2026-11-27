@@ -8,23 +8,16 @@ keep it current at a general level (see `CLAUDE.md`). Don't build an open
 item until Mark says to start it. `todos_sql.sql` adds the Now / Next /
 Later labels (a to-do tag). This file keeps build notes only.
 
-### History rebuild (past memory) - in progress
-- Mark's instructions (2026-11-27): rebuild startup history Nov 13 to now
-  from every record, ask about anything unclear, and push history changes
-  only after those questions are answered. Startup work only, not personal
-  data; exact times not required.
-- Done 2026-11-27 (all tables snapshotted first into `startup_backups`):
-  overnight stretch now 12:36-3:00 AM; today's timer replaced by one running
-  stretch from 11:00 AM (source `correction`); both Nov 27 submits removed
-  and the held entries released, so the next submit rebuilds the day's
-  breakdown and points. The Claude hook and `ingest_claude_session` now keep
-  the whole day's notes (they cut to the last 14 before).
-- Answered: one real selling item on Nov 25, the Nov 26 Telegram pitch entry
-  was fake, nothing else unlogged, no MyFlow or Vibe animation work, don't
-  submit Nov 27 yet. The "Shipped" list for Nov 13, 17, 19, 24, 25, 26 is
-  confirmed right.
-- Pending Mark: the Nov 25 and 26 hours (Telegram-confirmed times alone, or
-  plus the later computer time). Nothing in past days is changed until then.
+### History rebuild (past memory) - done 2026-11-27
+- Nov 13-26 rebuilt from the Input Log, Telegram schedule and notes, n8n run
+  history, Claude Code transcripts on this PC and git, then confirmed by Mark:
+  Nov 25 15.35h (was a Miss), Nov 26 13.23h, one Shipped per day on Nov 13,
+  17, 19, 24, 25, 26, and one selling reply on Nov 25. Entries carry source
+  `rebuild`; total went from 657.67 to 1102.42 XP (level 12). Those days'
+  entries are marked checked, so a submit never scores them again.
+- Nov 27: overnight stretch ends 3:00 AM, timer runs from 11:00 AM, earlier
+  submits removed; Mark's own Stop and Submit rebuilds that day.
+- Snapshots of the tables before each change are in `startup_backups`.
 
 ### How submit works (built 2026-11-27)
 - `homepage_sql.sql` (applied; safe to re-run): `startup_todos.day` null =
