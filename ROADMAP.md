@@ -29,21 +29,28 @@ mountain-climb visual again - Mark wants that visual redone/polished, and
 wants that redo done in THIS session (Claude Code desktop) using its
 design/artifact tooling, not the dashboard session. Paused, not dropped.
 
-**The Climb (the real game system) — live (2026-11-26), replaces the simple
-hour-goal scoring entirely, per Mark's explicit call.** Task-based XP across
-four powers (Work/Shipping/Selling/Earning), levels that never drop, titles
-earned once and kept, streak/weather from daily results. Built across both
-sessions: the dashboard/cloud session wrote the SQL (`game_sql.sql`,
-`dashboard_sql.sql`) and wired the Telegram side directly against the live
-n8n workflow (it has its own n8n API key) - `log_game_task`/`undo_game_task`
-tools, "did <task>", auto-detected shipped/pitched, "/game", the whole-form
-"Climb" display, Sunday weekly recap. This session's part was running the
-actual SQL against Supabase, since that cloud container can only make HTTPS
-calls, not a raw Postgres connection - tested live (logged + undid a task).
-Old hour-goal rules (fixed daily minute target, level up/down by weekly win
-count) are gone, replaced by these functions: `finalize_startup_day` (Win =
-proof logged, no hour goal), `get_startup_today`, `stop_startup_session`,
-`log_startup_proof` - all now game-aware.
+**The Climb (the real game system) — the scoring is live in Supabase
+(2026-11-26), replacing the old hour-goal rules for good.** Task-based XP
+across four powers (Work/Shipping/Selling/Earning), levels that never drop,
+titles earned once and kept, streak/weather from daily results. SQL lives
+in `game_sql.sql`/`dashboard_sql.sql`, applied directly (that cloud session
+can only make HTTPS calls, not a raw Postgres connection, so this session
+ran it) - tested live.
+
+**Reversed same day, per Mark: Telegram has NO connection to Start Up Ops
+or the game anymore.** He decided the dashboard (with login) should own
+start/stop, to-dos, proof and all game-task logging entirely - Telegram
+shouldn't duplicate that. Removed from the bot: the Start/Stop keyboard
+buttons, the 9am no-start check, the wrap-up recap message, and every
+write-tool (`start_startup_session`, `stop_startup_session`,
+`add_startup_todo`, `complete_startup_todo`, `log_startup_proof`,
+`log_game_task`, `undo_game_task`, `get_game_state`) - all deleted from the
+n8n workflow and the system prompt. All that's left in Telegram is one
+short **read-only** summary line in the 10 PM Breakdown and `/today` (level,
+XP today, streak, and a plain-language list of what got logged that day) -
+no tool call, no interaction, nothing to type. The underlying Supabase
+tables/functions are untouched - the dashboard (once its login + action
+tabs are done) is the only thing that writes to them going forward.
 
 1. **Wake up ("Wake Proof") — done.** Daily Stoic/motivational passage at
    7:05am, paraphrase grading, one hint + one retry on a fail,
